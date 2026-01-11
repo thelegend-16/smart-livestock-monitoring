@@ -10,37 +10,36 @@ st.set_page_config(
 st.markdown("""
 <style>
 body {
-    background-color: #f4f6f8;
+    background-color: #f0f0f0;
 }
 
 /* Header */
 .app-header {
-    background: linear-gradient(90deg, #2e7d32, #66bb6a);
-    padding: 22px;
-    border-radius: 16px;
+    background-color: #4CAF50;
+    padding: 20px;
     color: white;
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 /* Card */
 .card {
     background-color: white;
-    padding: 18px;
-    border-radius: 14px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.08);
+    padding: 15px;
+    border: 1px solid #ddd;
     margin-bottom: 15px;
 }
 
 /* Button */
 .app-btn {
-    background-color: #2e7d32;
+    background-color: #4CAF50;
     color: white;
-    padding: 14px;
-    border-radius: 12px;
+    padding: 10px;
     text-align: center;
     font-size: 16px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    border: none;
+    cursor: pointer;
 }
 
 /* Bottom Nav */
