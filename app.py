@@ -6,10 +6,14 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- SAFE DARK MODE TOGGLE ----------
-with st.sidebar:
-    st.markdown("### ⚙️ Settings")
-    dark_mode = st.toggle("🌙 Dark Mode", value=False)
+# ---------- TOP SETTINGS BAR ----------
+top_left, top_mid, top_right = st.columns([6, 2, 2])
+
+with top_mid:
+    settings_clicked = st.button("⚙️ Settings")
+
+with top_right:
+    dark_mode = st.toggle("🌙 Dark", value=False)
 
 # ---------- COLORS BASED ON MODE ----------
 if dark_mode:
@@ -34,8 +38,15 @@ st.markdown(f"""
 }}
 
 .block-container {{
-    padding-top: 1.5rem;
+    padding-top: 0.5rem;
     padding-bottom: 6rem;
+}}
+
+.top-bar {{
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 10px;
 }}
 
 .app-header {{
@@ -69,7 +80,6 @@ st.markdown(f"""
     font-size: 17px;
     font-weight: 600;
     margin-bottom: 14px;
-    cursor: pointer;
 }}
 
 .bottom-nav {{
@@ -91,6 +101,17 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+# ---------- OPTIONAL SETTINGS PANEL ----------
+if settings_clicked:
+    st.markdown("""
+    <div class="card">
+        <h3>⚙️ App Settings</h3>
+        <p>• Notifications (coming soon)</p>
+        <p>• Language selection (coming soon)</p>
+        <p>• User profile settings (coming soon)</p>
+    </div>
+    """, unsafe_allow_html=True)
+
 # ---------- HEADER ----------
 st.markdown("""
 <div class="app-header">
@@ -99,7 +120,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ---------- INTRO CARD ----------
+# ---------- HOME CONTENT ----------
 st.markdown("""
 <div class="card">
     <h3>Welcome 👋</h3>
@@ -110,7 +131,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ---------- ACTION BUTTONS ----------
 st.markdown("""
 <div class="app-btn">🐄 Animals</div>
 <div class="app-btn">❤️ Health Monitoring</div>
