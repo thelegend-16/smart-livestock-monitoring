@@ -96,27 +96,7 @@ def login_page():
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= SIGNUP =================
-def signup_page():
-    auth_styles()
-    _, c, _ = st.columns([1, 1.5, 1])
-    with c:
-        st.markdown('<div class="auth-container">', unsafe_allow_html=True)
-        st.markdown('<div class="title-box">CREATE ACCOUNT</div>', unsafe_allow_html=True)
-        with st.form("signup"):
-            name = st.text_input("Full Name")
-            email = st.text_input("Email")
-            password = st.text_input("Password", type="password")
-            if st.form_submit_button("Sign Up"):
-                st.session_state.user = {"name": name, "email": email, "role": "Farmer"}
-                st.session_state.page = "app"
-                st.rerun()
-        if st.button("Back to Login"):
-            st.session_state.page = "login"
-            st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-
-# ================= MAIN APP =================
+# ================= MAIN APP LAYOUT =================
 def main_app():
     cl, ct, cp = st.columns([5, 2, 2])
     with cl:
@@ -143,13 +123,27 @@ def main_app():
         padding:30px; border-radius:20px;
         color:white; text-align:center; margin-bottom:25px;
     }}
-    .box {{
-        text-align:center; padding:20px;
+    .box-icon {{
+        text-align:center; padding:15px;
         border:2px solid {primary};
-        border-radius:20px;
+        border-bottom: none;
+        border-radius:20px 20px 0 0;
         background:{card};
-        font-size: 24px;
-        margin-bottom: 5px;
+        font-size: 30px;
+    }}
+    /* Custom button styling to snap to the icon box */
+    div.stButton > button {{
+        border-radius: 0 0 20px 20px !important;
+        border: 2px solid {primary} !important;
+        border-top: none !important;
+        background-color: {card} !important;
+        color: {text} !important;
+        height: 50px;
+        font-weight: bold;
+    }}
+    div.stButton > button:hover {{
+        background-color: {primary} !important;
+        color: white !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -159,6 +153,7 @@ def main_app():
             st.session_state.sub_page = "home"
             st.rerun()
 
+    # Routing
     if st.session_state.sub_page == "home":
         render_home(lang)
     elif st.session_state.sub_page == "animals":
@@ -172,136 +167,108 @@ def main_app():
     elif st.session_state.sub_page == "camera":
         render_camera(lang)
 
-# ================= HOME =================
+# ================= HOME PAGE =================
 def render_home(lang):
     st.markdown(f'<div class="header"><h1>🐄 {lang["title"]}</h1><p>{lang["subtitle"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f"### {lang['welcome']} {st.session_state.user['name']} 👋")
 
-    # Top Center Camera Button
+    # Camera at top center
     _, mid, _ = st.columns([1,2,1])
     with mid:
-        st.markdown(f'<div class="box">📸</div>', unsafe_allow_html=True)
+        st.markdown('<div class="box-icon">📸</div>', unsafe_allow_html=True)
         if st.button(lang["camera"], use_container_width=True):
             st.session_state.sub_page = "camera"; st.rerun()
 
-    st.write("") # Spacer
+    st.write("") 
 
-    # Grid for other buttons
+    # Grid for other 4 features
     r1c1, r1c2 = st.columns(2)
     with r1c1:
-        st.markdown(f'<div class="box">🐄</div>', unsafe_allow_html=True)
+        st.markdown('<div class="box-icon">🐄</div>', unsafe_allow_html=True)
         if st.button(lang["animals"], use_container_width=True):
             st.session_state.sub_page = "animals"; st.rerun()
-
     with r1c2:
-        st.markdown(f'<div class="box">❤️</div>', unsafe_allow_html=True)
+        st.markdown('<div class="box-icon">❤️</div>', unsafe_allow_html=True)
         if st.button(lang["health"], use_container_width=True):
             st.session_state.sub_page = "health"; st.rerun()
 
     r2c1, r2c2 = st.columns(2)
     with r2c1:
-        st.markdown(f'<div class="box">👨‍🌾</div>', unsafe_allow_html=True)
+        st.markdown('<div class="box-icon">👨‍🌾</div>', unsafe_allow_html=True)
         if st.button(lang["portal"], use_container_width=True):
             st.session_state.sub_page = "portal"; st.rerun()
-
     with r2c2:
-        st.markdown(f'<div class="box">📅</div>', unsafe_allow_html=True)
+        st.markdown('<div class="box-icon">📅</div>', unsafe_allow_html=True)
         if st.button(lang["attendance"], use_container_width=True):
             st.session_state.sub_page = "attendance"; st.rerun()
 
-# ================= CAMERA PAGE =================
+# ================= FEATURE PAGES =================
 def render_camera(lang):
     st.header(f"📸 {lang['camera']}")
     tab1, tab2 = st.tabs(["📷 Take Photo", "📁 Upload Image"])
     with tab1:
-        img = st.camera_input("Use device camera")
-        if img:
-            st.image(img, caption="Captured Image", use_container_width=True)
-            st.success("Image successfully captured.")
+        img = st.camera_input("Capture Animal")
+        if img: st.image(img, use_container_width=True)
     with tab2:
-        file = st.file_uploader("Choose a file", type=["jpg","png","jpeg"])
-        if file:
-            st.image(Image.open(file), caption="Uploaded Image", use_container_width=True)
-            st.success("File uploaded successfully.")
+        file = st.file_uploader("Upload", type=["jpg","png","jpeg"])
+        if file: st.image(Image.open(file), use_container_width=True)
 
-# ================= ATTENDANCE PAGE =================
 def render_attendance(lang):
     st.header(f"📅 {lang['attendance']}")
-    if st.button("✅ Mark Present Today", use_container_width=True):
+    if st.button("✅ Mark Attendance"):
         st.session_state.attendance_logs.append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        st.toast("Attendance marked!")
-    
-    st.divider()
+        st.success("Success!")
     if st.session_state.attendance_logs:
-        df = pd.DataFrame(st.session_state.attendance_logs, columns=["Date & Time"])
-        st.dataframe(df, use_container_width=True)
-    else:
-        st.info("No logs found.")
+        st.table(pd.DataFrame(st.session_state.attendance_logs, columns=["Timestamp"]))
 
-# ================= ANIMALS PAGE =================
 def render_animals(lang):
     st.header(f"🐄 {lang['animals']}")
-    with st.expander("➕ Register New Animal"):
-        with st.form("animal"):
-            aid = st.text_input("Tag ID (e.g. COW-01)")
-            atype = st.selectbox("Type", ["Cow","Buffalo","Goat","Sheep"])
-            age = st.number_input("Age (Years)", 0, 30)
-            if st.form_submit_button("Add to Herd"):
-                if aid:
-                    st.session_state.herd_data.loc[len(st.session_state.herd_data)] = [aid, atype, age, "Healthy"]
-                    st.success("Added!")
-                else:
-                    st.error("Please provide a Tag ID")
-    
-    st.divider()
+    with st.form("add_animal"):
+        aid = st.text_input("Tag ID")
+        atype = st.selectbox("Type", ["Cow","Buffalo","Goat","Sheep"])
+        age = st.number_input("Age", 0)
+        if st.form_submit_button("Add"):
+            st.session_state.herd_data.loc[len(st.session_state.herd_data)] = [aid, atype, age, "Healthy"]
     st.dataframe(st.session_state.herd_data, use_container_width=True)
 
-# ================= HEALTH PAGE =================
 def render_health(lang):
     st.header(f"❤️ {lang['health']}")
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Avg Temp", "38.5 °C", "Normal")
-    c2.metric("Heart Rate", "72 BPM", "+2")
-    c3.metric("Activity", "Active", "High")
-    
-    st.line_chart(pd.DataFrame({"Health Index": [80, 85, 82, 90, 88]}))
+    st.metric("Avg Temp", "38.5 °C")
+    st.metric("Activity", "High")
 
-# ================= VET PORTAL PAGE =================
 def render_vet_portal(lang):
     st.header(f"👨‍⚕️ {lang['portal']}")
-    st.subheader("Available Veterinarians Nearby")
-    vets = [
-        {"name": "Dr. Sharma", "loc": "2.5km away", "spec": "Large Animals"},
-        {"name": "Dr. Verma", "loc": "4.1km away", "spec": "Surgery"}
-    ]
+    vets = ["Dr. Sharma (2km)", "Dr. Verma (5km)"]
     for v in vets:
         with st.container(border=True):
-            st.write(f"**{v['name']}** - {v['spec']}")
-            st.caption(f"📍 {v['loc']}")
-            if st.button(f"📞 Contact {v['name']}"):
-                st.success(f"Calling {v['name']}...")
+            st.write(f"**{v}**")
+            if st.button(f"Call {v.split()[1]}"): st.info("Dialing...")
 
-# ================= PROFILE PAGE =================
+# ================= NAVIGATION =================
+def signup_page():
+    auth_styles()
+    _, c, _ = st.columns([1, 1.5, 1])
+    with c:
+        st.markdown('<div class="auth-container">', unsafe_allow_html=True)
+        st.markdown('<div class="title-box">CREATE ACCOUNT</div>', unsafe_allow_html=True)
+        with st.form("signup"):
+            name = st.text_input("Full Name")
+            email = st.text_input("Email")
+            if st.form_submit_button("Sign Up"):
+                st.session_state.user = {"name": name, "email": email, "role": "Farmer"}
+                st.session_state.page = "app"; st.rerun()
+        if st.button("Back"): st.session_state.page = "login"; st.rerun()
+
 def profile_page():
-    st.header("👤 Your Profile")
-    st.write(f"**Name:** {st.session_state.user['name']}")
-    st.write(f"**Email:** {st.session_state.user['email']}")
-    st.write(f"**Role:** {st.session_state.user['role']}")
-    
-    if st.button("Logout", type="primary"):
+    st.header("👤 Profile")
+    st.write(f"Logged in as: {st.session_state.user['name']}")
+    if st.button("Logout"):
         st.session_state.page = "login"
-        st.session_state.user = {"name":"","email":"","role":"Farmer"}
+        st.session_state.user = {"name":"","email":""}
         st.rerun()
-    if st.button("Back"):
-        st.session_state.page = "app"
-        st.rerun()
+    if st.button("Back"): st.session_state.page = "app"; st.rerun()
 
-# ================= ROUTER =================
-if st.session_state.page == "login":
-    login_page()
-elif st.session_state.page == "signup":
-    signup_page()
-elif st.session_state.page == "profile":
-    profile_page()
-else:
-    main_app()
+if st.session_state.page == "login": login_page()
+elif st.session_state.page == "signup": signup_page()
+elif st.session_state.page == "profile": profile_page()
+else: main_app()
