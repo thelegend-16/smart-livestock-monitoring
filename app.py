@@ -9,11 +9,43 @@ st.set_page_config(
 # ================= SESSION STATE =================
 if "auth_page" not in st.session_state:
     st.session_state.auth_page = "login"  # login | signup | app
+
 if "user_email" not in st.session_state:
     st.session_state.user_email = None
 
 
-# ================= COMMON STYLES =================
+# ================= LANGUAGE DATA =================
+LANGUAGES = {
+    "English": {
+        "title": "Livestock Care App",
+        "subtitle": "Smart monitoring for modern farmers",
+        "welcome": "Welcome 👋",
+        "desc": "Track livestock health, monitor activity, and connect with veterinarians — all from a single smart app designed for farmers.",
+        "animals": "Animals",
+        "health": "Health Monitoring",
+        "portal": "Farmer / Vet Portal",
+        "dark": "Dark Mode",
+        "controls": "App Controls",
+        "settings": "App Settings",
+        "profile": "Profile"
+    },
+    "Hindi": {
+        "title": "पशुधन देखभाल ऐप",
+        "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
+        "welcome": "स्वागत है 👋",
+        "desc": "पशुओं के स्वास्थ्य की निगरानी करें और पशु चिकित्सकों से जुड़ें।",
+        "animals": "पशु",
+        "health": "स्वास्थ्य निगरानी",
+        "portal": "किसान / पशु चिकित्सक पोर्टल",
+        "dark": "डार्क मोड",
+        "controls": "ऐप नियंत्रण",
+        "settings": "ऐप सेटिंग्स",
+        "profile": "प्रोफ़ाइल"
+    }
+}
+
+
+# ================= AUTH STYLES =================
 def auth_styles():
     st.markdown("""
     <style>
@@ -55,29 +87,6 @@ def auth_styles():
         color: #6b7280;
         margin-bottom: 25px;
     }
-
-    .auth-btn button {
-        width: 100%;
-        background: linear-gradient(90deg, #2e7d32, #4caf50);
-        color: white;
-        padding: 12px;
-        border-radius: 12px;
-        font-size: 16px;
-        font-weight: 600;
-        border: none;
-    }
-
-    .auth-footer {
-        text-align: center;
-        margin-top: 18px;
-        color: #374151;
-    }
-
-    .auth-footer span {
-        color: #2e7d32;
-        cursor: pointer;
-        font-weight: 600;
-    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -107,18 +116,11 @@ def login_page():
         else:
             st.error("Please enter email and password")
 
-    st.markdown("""
-            <div class="auth-footer">
-                Don't have an account?
-                <span onclick="window.location.reload()">Sign up</span>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Go to Sign Up"):
+    if st.button("Don't have an account? Sign up"):
         st.session_state.auth_page = "signup"
         st.rerun()
+
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
 
 # ================= SIGN UP PAGE =================
@@ -145,7 +147,7 @@ def signup_page():
             st.session_state.auth_page = "app"
             st.rerun()
         else:
-            st.error("Check your inputs")
+            st.error("Please check your inputs")
 
     if st.button("Already have an account? Sign In"):
         st.session_state.auth_page = "login"
@@ -156,40 +158,104 @@ def signup_page():
 
 # ================= MAIN APP =================
 def main_app():
-    st.markdown("""
+
+    # ---------- TOP CONTROLS ----------
+    st.markdown("### ⚙️ App Controls")
+    col1, col2, col3 = st.columns([6, 2, 2])
+
+    with col3:
+        selected_language = st.selectbox("🌐 Language", list(LANGUAGES.keys()))
+
+    lang = LANGUAGES[selected_language]
+
+    with col2:
+        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
+
+    with col1:
+        with st.expander(f"⚙️ {lang['settings']}"):
+            st.write(f"Logged in as: **{st.session_state.user_email}**")
+            if st.button("Logout"):
+                st.session_state.auth_page = "login"
+                st.session_state.user_email = None
+                st.rerun()
+
+    # ---------- THEME ----------
+    if dark_mode:
+        bg = "#0e1117"
+        card = "#161b22"
+        text = "#ffffff"
+        subtext = "#c9d1d9"
+        primary = "#2ea043"
+    else:
+        bg = "#f4f6f8"
+        card = "#ffffff"
+        text = "#000000"
+        subtext = "#555555"
+        primary = "#2e7d32"
+
+    # ---------- STYLES ----------
+    st.markdown(f"""
     <style>
-    .profile-card {
-        background: #ffffff;
-        padding: 20px;
+    .stApp {{
+        background-color: {bg};
+        color: {text};
+    }}
+
+    .app-header {{
+        background: linear-gradient(90deg, {primary}, #4caf50);
+        padding: 26px;
+        border-radius: 18px;
+        color: white;
+        text-align: center;
+        margin-bottom: 28px;
+    }}
+
+    .card {{
+        background-color: {card};
+        padding: 22px;
         border-radius: 16px;
-        box-shadow: 0px 10px 30px rgba(0,0,0,0.12);
-        max-width: 400px;
-    }
+        box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
+        margin-bottom: 18px;
+    }}
+
+    .app-btn {{
+        background: linear-gradient(90deg, {primary}, #4caf50);
+        color: white;
+        padding: 16px;
+        border-radius: 14px;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }}
+
+    [data-testid="stToggle"] label div {{
+        color: {text} !important;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
-    st.title("🐄 Livestock Care App")
-
-    st.subheader("👤 Profile")
-
+    # ---------- HEADER ----------
     st.markdown(f"""
-    <div class="profile-card">
-        <b>Email:</b> {st.session_state.user_email}<br><br>
+    <div class="app-header">
+        <h1>🐄 {lang['title']}</h1>
+        <p>{lang['subtitle']}</p>
     </div>
     """, unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    # ---------- HOME ----------
+    st.markdown(f"""
+    <div class="card">
+        <h3>{lang['welcome']}</h3>
+        <p>{lang['desc']}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with col1:
-        if st.button("Switch Account"):
-            st.session_state.auth_page = "login"
-            st.rerun()
-
-    with col2:
-        if st.button("Logout"):
-            st.session_state.user_email = None
-            st.session_state.auth_page = "login"
-            st.rerun()
+    st.markdown(f"""
+    <div class="app-btn">🐄 {lang['animals']}</div>
+    <div class="app-btn">❤️ {lang['health']}</div>
+    <div class="app-btn">👨‍🌾 {lang['portal']}</div>
+    """, unsafe_allow_html=True)
 
 
 # ================= ROUTER =================
