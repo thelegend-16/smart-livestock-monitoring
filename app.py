@@ -167,7 +167,7 @@ def main_app():
     lang = LANGUAGES[language]
 
     with col2:
-        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
+        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=True)
 
     with col1:
         if st.button("👤 Profile"):
