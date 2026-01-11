@@ -96,6 +96,11 @@ st.markdown(f"""
     font-size: 14px;
     color: {subtext};
 }}
+
+/* 🔹 FIX: Toggle label color based on mode */
+.stToggle label span {{
+    color: {text} !important;
+}}
 </style>
 """, unsafe_allow_html=True)
 
