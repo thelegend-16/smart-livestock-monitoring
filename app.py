@@ -6,9 +6,9 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- TOP BAR (APP STYLE) ----------
-top_left, top_right = st.columns([8, 2])
-with top_right:
+# ---------- SAFE DARK MODE TOGGLE ----------
+with st.sidebar:
+    st.markdown("### ⚙️ Settings")
     dark_mode = st.toggle("🌙 Dark Mode", value=False)
 
 # ---------- COLORS BASED ON MODE ----------
@@ -28,20 +28,16 @@ else:
 # ---------- STYLES ----------
 st.markdown(f"""
 <style>
-
-/* Full page background */
 .stApp {{
     background-color: {bg};
     color: {text};
 }}
 
-/* Main container spacing */
 .block-container {{
     padding-top: 1.5rem;
     padding-bottom: 6rem;
 }}
 
-/* Header */
 .app-header {{
     background: linear-gradient(90deg, {primary}, #4caf50);
     padding: 28px;
@@ -51,7 +47,6 @@ st.markdown(f"""
     margin-bottom: 30px;
 }}
 
-/* Cards */
 .card {{
     background-color: {card};
     padding: 22px;
@@ -65,7 +60,6 @@ st.markdown(f"""
     font-size: 16px;
 }}
 
-/* App buttons */
 .app-btn {{
     background: linear-gradient(90deg, {primary}, #4caf50);
     color: white;
@@ -78,7 +72,6 @@ st.markdown(f"""
     cursor: pointer;
 }}
 
-/* Bottom navigation */
 .bottom-nav {{
     position: fixed;
     bottom: 0;
@@ -95,7 +88,6 @@ st.markdown(f"""
     font-size: 14px;
     color: {subtext};
 }}
-
 </style>
 """, unsafe_allow_html=True)
 
