@@ -29,10 +29,21 @@ LANGUAGES = {
         "portal": "Farmer / Vet Portal",
         "dark": "Dark Mode",
         "profile": "Profile"
+    },
+    "Hindi": {
+        "title": "पशुधन देखभाल ऐप",
+        "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
+        "welcome": "स्वागत है 👋",
+        "desc": "पशुओं के स्वास्थ्य की निगरानी करें और पशु चिकित्सकों से जुड़ें।",
+        "animals": "पशु",
+        "health": "स्वास्थ्य निगरानी",
+        "portal": "किसान / पशु चिकित्सक पोर्टल",
+        "dark": "डार्क मोड",
+        "profile": "प्रोफ़ाइल"
     }
 }
 
-# ================= LOGIN / SIGNUP STYLES =================
+# ================= COMMON AUTH STYLES =================
 def auth_styles():
     st.markdown("""
     <style>
@@ -40,58 +51,39 @@ def auth_styles():
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        height: 90vh;
+        background: linear-gradient(120deg, #e8f5e9, #f1f8e9);
     }
 
     .auth-card {
-        width: 440px;
+        width: 420px;
         background: white;
-        padding: 36px;
-        border-radius: 22px;
-        box-shadow: 0px 25px 60px rgba(0,0,0,0.18);
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: 0px 20px 50px rgba(0,0,0,0.15);
     }
 
-    .auth-brand {
+    .auth-header {
+        background: linear-gradient(90deg, #2e7d32, #4caf50);
+        color: white;
+        padding: 18px;
+        border-radius: 14px;
         text-align: center;
-        margin-bottom: 22px;
-    }
-
-    .auth-brand h1 {
-        font-size: 26px;
-        margin-bottom: 4px;
-        color: #1b5e20;
-    }
-
-    .auth-brand p {
-        color: #6b7280;
-        font-size: 14px;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 25px;
     }
 
     .auth-title {
-        font-size: 24px;
+        font-size: 28px;
         font-weight: 700;
         margin-bottom: 6px;
-        color: #111827;
+        color: #1f2937;
     }
 
     .auth-subtitle {
         color: #6b7280;
-        margin-bottom: 24px;
-    }
-
-    .auth-footer {
-        text-align: center;
-        margin-top: 18px;
-        font-size: 14px;
-    }
-
-    .auth-footer button {
-        background: none;
-        border: none;
-        color: #2e7d32;
-        font-weight: 600;
-        cursor: pointer;
+        margin-bottom: 25px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -103,16 +95,9 @@ def login_page():
     st.markdown("""
     <div class="auth-wrapper">
       <div class="auth-card">
-
-        <div class="auth-brand">
-            <h1>🐄 Livestock Care App</h1>
-            <p>Smart Livestock Management Platform</p>
-        </div>
-
+        <div class="auth-header">Smart Livestock Management</div>
         <div class="auth-title">Welcome Back</div>
-        <div class="auth-subtitle">
-            Welcome to Livestock Care App. Please sign in to continue.
-        </div>
+        <div class="auth-subtitle">Sign in to access your dashboard</div>
     """, unsafe_allow_html=True)
 
     with st.form("login_form"):
@@ -129,35 +114,22 @@ def login_page():
         else:
             st.error("Please enter email and password")
 
-    st.markdown("""
-        <div class="auth-footer">
-            Don’t have an account?
-        </div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Create Account"):
+    if st.button("Don't have an account? Sign Up"):
         st.session_state.page = "signup"
         st.rerun()
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
-# ================= SIGN UP PAGE (UNCHANGED) =================
+# ================= SIGN UP PAGE =================
 def signup_page():
     auth_styles()
 
     st.markdown("""
     <div class="auth-wrapper">
       <div class="auth-card">
-
-        <div class="auth-brand">
-            <h1>🐄 Livestock Care App</h1>
-            <p>Create your account</p>
-        </div>
-
+        <div class="auth-header">Smart Livestock Management</div>
         <div class="auth-title">Create Account</div>
-        <div class="auth-subtitle">
-            Start managing your livestock smarter
-        </div>
+        <div class="auth-subtitle">Start managing your livestock smarter</div>
     """, unsafe_allow_html=True)
 
     with st.form("signup_form"):
@@ -185,7 +157,7 @@ def signup_page():
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
-# ================= MAIN APP (UNCHANGED) =================
+# ================= MAIN APP =================
 def main_app():
     col1, col2, col3 = st.columns([6, 2, 2])
 
@@ -212,27 +184,19 @@ def main_app():
     .stApp {{ background-color: {bg}; color: {text}; }}
     .header {{
         background: linear-gradient(90deg, {primary}, #4caf50);
-        padding: 26px;
-        border-radius: 18px;
-        color: white;
-        text-align: center;
-        margin-bottom: 28px;
+        padding: 26px; border-radius: 18px;
+        color: white; text-align: center; margin-bottom: 28px;
     }}
     .card {{
-        background: {card};
-        padding: 22px;
-        border-radius: 16px;
+        background: {card}; padding: 22px; border-radius: 16px;
         box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
         margin-bottom: 18px;
     }}
     .btn {{
         background: linear-gradient(90deg, {primary}, #4caf50);
-        color: white;
-        padding: 16px;
-        border-radius: 14px;
-        text-align: center;
-        font-size: 17px;
-        font-weight: 600;
+        color: white; padding: 16px;
+        border-radius: 14px; text-align: center;
+        font-size: 17px; font-weight: 600;
         margin-bottom: 14px;
     }}
     </style>
@@ -258,14 +222,14 @@ def main_app():
     <div class="btn">👨‍🌾 {lang['portal']}</div>
     """, unsafe_allow_html=True)
 
-# ================= PROFILE PAGE (UNCHANGED) =================
+# ================= PROFILE PAGE =================
 def profile_page():
     st.subheader("👤 User Profile")
 
     with st.form("edit_profile"):
         name = st.text_input("Name", st.session_state.user["name"])
         email = st.text_input("Email", st.session_state.user["email"])
-        role = st.selectbox("Role", ["Farmer", "Veterinarian"])
+        role = st.selectbox("Role", ["Farmer", "Veterinarian"], index=0)
         save = st.form_submit_button("Save Changes")
 
     if save:
