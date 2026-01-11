@@ -76,7 +76,7 @@ else:
     bg = "#f4f6f8"
     card = "#ffffff"
     text = "#000000"
-    subtext = "#555555"
+    subtext = "#000000"
     primary = "#2e7d32"
 
 # ================= STYLES =================
