@@ -79,7 +79,7 @@ def login_page():
     with c:
         st.markdown('<div class="auth-container">', unsafe_allow_html=True)
         st.markdown('<div class="title-box">LIVESTOCK CARE APP</div>', unsafe_allow_html=True)
-        st.markdown('<div class="welcome-subtext">Welcome to Livestock Care App</div>', unsafe_allow_html=True)
+        st.markdown('<div class="welcome-subtext">Welcome</div>', unsafe_allow_html=True)
 
         with st.form("login"):
             email = st.text_input("Email")
@@ -144,10 +144,12 @@ def main_app():
         color:white; text-align:center; margin-bottom:25px;
     }}
     .box {{
-        text-align:center; padding:25px;
+        text-align:center; padding:20px;
         border:2px solid {primary};
         border-radius:20px;
         background:{card};
+        font-size: 24px;
+        margin-bottom: 5px;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -175,84 +177,118 @@ def render_home(lang):
     st.markdown(f'<div class="header"><h1>🐄 {lang["title"]}</h1><p>{lang["subtitle"]}</p></div>', unsafe_allow_html=True)
     st.markdown(f"### {lang['welcome']} {st.session_state.user['name']} 👋")
 
+    # Top Center Camera Button
+    _, mid, _ = st.columns([1,2,1])
+    with mid:
+        st.markdown(f'<div class="box">📸</div>', unsafe_allow_html=True)
+        if st.button(lang["camera"], use_container_width=True):
+            st.session_state.sub_page = "camera"; st.rerun()
+
+    st.write("") # Spacer
+
+    # Grid for other buttons
     r1c1, r1c2 = st.columns(2)
     with r1c1:
-        st.markdown(f'<div class="box">🐄<br><b>{lang["animals"]}</b></div>', unsafe_allow_html=True)
-        if st.button("Manage Herd", use_container_width=True):
+        st.markdown(f'<div class="box">🐄</div>', unsafe_allow_html=True)
+        if st.button(lang["animals"], use_container_width=True):
             st.session_state.sub_page = "animals"; st.rerun()
 
     with r1c2:
-        st.markdown(f'<div class="box">❤️<br><b>{lang["health"]}</b></div>', unsafe_allow_html=True)
-        if st.button("Check Vitals", use_container_width=True):
+        st.markdown(f'<div class="box">❤️</div>', unsafe_allow_html=True)
+        if st.button(lang["health"], use_container_width=True):
             st.session_state.sub_page = "health"; st.rerun()
 
     r2c1, r2c2 = st.columns(2)
     with r2c1:
-        st.markdown(f'<div class="box">👨‍🌾<br><b>{lang["portal"]}</b></div>', unsafe_allow_html=True)
-        if st.button("Find Vets", use_container_width=True):
+        st.markdown(f'<div class="box">👨‍🌾</div>', unsafe_allow_html=True)
+        if st.button(lang["portal"], use_container_width=True):
             st.session_state.sub_page = "portal"; st.rerun()
 
     with r2c2:
-        st.markdown(f'<div class="box">📅<br><b>{lang["attendance"]}</b></div>', unsafe_allow_html=True)
-        if st.button("Attendance", use_container_width=True):
+        st.markdown(f'<div class="box">📅</div>', unsafe_allow_html=True)
+        if st.button(lang["attendance"], use_container_width=True):
             st.session_state.sub_page = "attendance"; st.rerun()
 
-    _, mid, _ = st.columns([1,2,1])
-    with mid:
-        st.markdown(f'<div class="box">📸<br><b>{lang["camera"]}</b></div>', unsafe_allow_html=True)
-        if st.button("Open Camera / Upload", use_container_width=True):
-            st.session_state.sub_page = "camera"; st.rerun()
-
-# ================= CAMERA =================
+# ================= CAMERA PAGE =================
 def render_camera(lang):
     st.header(f"📸 {lang['camera']}")
     tab1, tab2 = st.tabs(["📷 Take Photo", "📁 Upload Image"])
     with tab1:
-        img = st.camera_input("Capture Image")
+        img = st.camera_input("Use device camera")
         if img:
-            st.image(img, use_container_width=True)
+            st.image(img, caption="Captured Image", use_container_width=True)
+            st.success("Image successfully captured.")
     with tab2:
-        file = st.file_uploader("Upload Image", type=["jpg","png","jpeg"])
+        file = st.file_uploader("Choose a file", type=["jpg","png","jpeg"])
         if file:
-            st.image(Image.open(file), use_container_width=True)
+            st.image(Image.open(file), caption="Uploaded Image", use_container_width=True)
+            st.success("File uploaded successfully.")
 
-# ================= ATTENDANCE =================
+# ================= ATTENDANCE PAGE =================
 def render_attendance(lang):
     st.header(f"📅 {lang['attendance']}")
-    if st.button("Mark Present"):
+    if st.button("✅ Mark Present Today", use_container_width=True):
         st.session_state.attendance_logs.append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        st.toast("Attendance marked!")
+    
+    st.divider()
     if st.session_state.attendance_logs:
-        st.table(pd.DataFrame(st.session_state.attendance_logs, columns=["Timestamp"]))
+        df = pd.DataFrame(st.session_state.attendance_logs, columns=["Date & Time"])
+        st.dataframe(df, use_container_width=True)
+    else:
+        st.info("No logs found.")
 
-# ================= ANIMALS =================
+# ================= ANIMALS PAGE =================
 def render_animals(lang):
     st.header(f"🐄 {lang['animals']}")
-    with st.form("animal"):
-        aid = st.text_input("Tag ID")
-        atype = st.selectbox("Type", ["Cow","Buffalo","Goat","Sheep"])
-        age = st.number_input("Age", 0)
-        if st.form_submit_button("Add"):
-            st.session_state.herd_data.loc[len(st.session_state.herd_data)] = [aid, atype, age, "Healthy"]
+    with st.expander("➕ Register New Animal"):
+        with st.form("animal"):
+            aid = st.text_input("Tag ID (e.g. COW-01)")
+            atype = st.selectbox("Type", ["Cow","Buffalo","Goat","Sheep"])
+            age = st.number_input("Age (Years)", 0, 30)
+            if st.form_submit_button("Add to Herd"):
+                if aid:
+                    st.session_state.herd_data.loc[len(st.session_state.herd_data)] = [aid, atype, age, "Healthy"]
+                    st.success("Added!")
+                else:
+                    st.error("Please provide a Tag ID")
+    
+    st.divider()
     st.dataframe(st.session_state.herd_data, use_container_width=True)
 
-# ================= HEALTH =================
+# ================= HEALTH PAGE =================
 def render_health(lang):
     st.header(f"❤️ {lang['health']}")
-    st.metric("Avg Temperature", "38.5 °C")
-    st.metric("Activity Level", "High")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Avg Temp", "38.5 °C", "Normal")
+    c2.metric("Heart Rate", "72 BPM", "+2")
+    c3.metric("Activity", "Active", "High")
+    
+    st.line_chart(pd.DataFrame({"Health Index": [80, 85, 82, 90, 88]}))
 
-# ================= VET PORTAL =================
+# ================= VET PORTAL PAGE =================
 def render_vet_portal(lang):
     st.header(f"👨‍⚕️ {lang['portal']}")
-    for v in ["Dr Sharma","Dr Verma"]:
-        st.write(v)
-        if st.button(f"Call {v}"): st.success("Calling...")
+    st.subheader("Available Veterinarians Nearby")
+    vets = [
+        {"name": "Dr. Sharma", "loc": "2.5km away", "spec": "Large Animals"},
+        {"name": "Dr. Verma", "loc": "4.1km away", "spec": "Surgery"}
+    ]
+    for v in vets:
+        with st.container(border=True):
+            st.write(f"**{v['name']}** - {v['spec']}")
+            st.caption(f"📍 {v['loc']}")
+            if st.button(f"📞 Contact {v['name']}"):
+                st.success(f"Calling {v['name']}...")
 
-# ================= PROFILE =================
+# ================= PROFILE PAGE =================
 def profile_page():
-    st.header("👤 Profile")
-    st.write(st.session_state.user)
-    if st.button("Logout"):
+    st.header("👤 Your Profile")
+    st.write(f"**Name:** {st.session_state.user['name']}")
+    st.write(f"**Email:** {st.session_state.user['email']}")
+    st.write(f"**Role:** {st.session_state.user['role']}")
+    
+    if st.button("Logout", type="primary"):
         st.session_state.page = "login"
         st.session_state.user = {"name":"","email":"","role":"Farmer"}
         st.rerun()
