@@ -6,176 +6,180 @@ st.set_page_config(
     layout="wide"
 )
 
-# ================= LANGUAGE DATA =================
-LANGUAGES = {
-    "English": {
-        "title": "Livestock Care App",
-        "subtitle": "Smart monitoring for modern farmers",
-        "welcome": "Welcome 👋",
-        "desc": "Track livestock health, monitor activity, and connect with veterinarians — all from a single smart app designed for farmers.",
-        "animals": "Animals",
-        "health": "Health Monitoring",
-        "portal": "Farmer / Vet Portal",
-        "controls": "App Controls",
-        "settings": "App Settings",
-        "dark": "Dark Mode"
-    },
-    "Hindi": {
-        "title": "पशुधन देखभाल ऐप",
-        "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
-        "welcome": "स्वागत है 👋",
-        "desc": "पशुओं के स्वास्थ्य की निगरानी करें, गतिविधि ट्रैक करें और पशु चिकित्सकों से जुड़ें।",
-        "animals": "पशु",
-        "health": "स्वास्थ्य निगरानी",
-        "portal": "किसान / पशु चिकित्सक पोर्टल",
-        "controls": "ऐप नियंत्रण",
-        "settings": "ऐप सेटिंग्स",
-        "dark": "डार्क मोड"
-    },
-    "Tamil": {
-        "title": "மிருக பராமரிப்பு செயலி",
-        "subtitle": "நவீன விவசாயிகளுக்கான புத்திசாலி கண்காணிப்பு",
-        "welcome": "வரவேற்கிறோம் 👋",
-        "desc": "மிருக ஆரோக்கியத்தை கண்காணிக்கவும், செயல்பாட்டை கண்காணிக்கவும் மற்றும் விலங்கு மருத்துவருடன் இணைக்கவும்.",
-        "animals": "மிருகங்கள்",
-        "health": "ஆரோக்கிய கண்காணிப்பு",
-        "portal": "விவசாயி / மருத்துவர் போர்டல்",
-        "controls": "அப் கட்டுப்பாடுகள்",
-        "settings": "அப் அமைப்புகள்",
-        "dark": "இருண்ட முறை"
+# ================= SESSION STATE =================
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+    st.session_state.user_role = None
+
+# ================= LOGIN PAGE =================
+def login_page():
+    st.markdown("""
+    <style>
+    .login-box {
+        max-width: 400px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
+        margin-top: 100px;
     }
-}
+    </style>
+    """, unsafe_allow_html=True)
 
-# ================= TOP CONTROLS =================
-st.markdown(f"### ⚙️ {LANGUAGES['English']['controls']}")
+    st.markdown("""
+    <div class="login-box">
+        <h2 style="text-align:center;">🐄 Livestock Care App</h2>
+        <p style="text-align:center;">Login to continue</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([6, 2, 2])
+    with st.form("login_form"):
+        role = st.selectbox("Login as", ["Farmer", "Veterinarian", "Admin"])
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submit = st.form_submit_button("Login")
 
-with col3:
-    selected_language = st.selectbox("🌐 Language", list(LANGUAGES.keys()))
+    if submit:
+        if username and password:
+            st.session_state.logged_in = True
+            st.session_state.user_role = role
+            st.experimental_rerun()
+        else:
+            st.error("Please enter username and password")
 
-lang = LANGUAGES[selected_language]
+# ================= MAIN APP =================
+def main_app():
 
-with col2:
-    dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
+    # ---------- LANGUAGE DATA ----------
+    LANGUAGES = {
+        "English": {
+            "title": "Livestock Care App",
+            "subtitle": "Smart monitoring for modern farmers",
+            "welcome": "Welcome 👋",
+            "desc": "Track livestock health, monitor activity, and connect with veterinarians — all from a single smart app designed for farmers.",
+            "animals": "Animals",
+            "health": "Health Monitoring",
+            "portal": "Farmer / Vet Portal",
+            "controls": "App Controls",
+            "settings": "App Settings",
+            "dark": "Dark Mode"
+        },
+        "Hindi": {
+            "title": "पशुधन देखभाल ऐप",
+            "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
+            "welcome": "स्वागत है 👋",
+            "desc": "पशुओं के स्वास्थ्य की निगरानी करें और पशु चिकित्सकों से जुड़ें।",
+            "animals": "पशु",
+            "health": "स्वास्थ्य निगरानी",
+            "portal": "किसान / पशु चिकित्सक पोर्टल",
+            "controls": "ऐप नियंत्रण",
+            "settings": "ऐप सेटिंग्स",
+            "dark": "डार्क मोड"
+        }
+    }
 
-with col1:
-    with st.expander(f"⚙️ {lang['settings']}"):
-        st.write("• Notifications (coming soon)")
-        st.write("• Language preferences")
-        st.write("• Profile settings")
+    # ---------- TOP CONTROLS ----------
+    st.markdown("### ⚙️ App Controls")
 
-# ================= THEME COLORS =================
-if dark_mode:
-    bg = "#0e1117"
-    card = "#161b22"
-    text = "#ffffff"
-    subtext = "#c9d1d9"
-    primary = "#2ea043"
+    col1, col2, col3 = st.columns([6, 2, 2])
+
+    with col3:
+        language = st.selectbox("🌐 Language", list(LANGUAGES.keys()))
+
+    lang = LANGUAGES[language]
+
+    with col2:
+        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
+
+    with col1:
+        with st.expander(f"⚙️ {lang['settings']}"):
+            st.write(f"Logged in as: **{st.session_state.user_role}**")
+            if st.button("Logout"):
+                st.session_state.logged_in = False
+                st.experimental_rerun()
+
+    # ---------- THEME COLORS ----------
+    if dark_mode:
+        bg = "#0e1117"
+        card = "#161b22"
+        text = "#ffffff"
+        subtext = "#c9d1d9"
+        primary = "#2ea043"
+    else:
+        bg = "#f4f6f8"
+        card = "#ffffff"
+        text = "#000000"
+        subtext = "#555555"
+        primary = "#2e7d32"
+
+    # ---------- STYLES ----------
+    st.markdown(f"""
+    <style>
+    .stApp {{
+        background-color: {bg};
+        color: {text};
+    }}
+
+    .app-header {{
+        background: linear-gradient(90deg, {primary}, #4caf50);
+        padding: 26px;
+        border-radius: 18px;
+        color: white;
+        text-align: center;
+        margin-bottom: 28px;
+    }}
+
+    .card {{
+        background-color: {card};
+        padding: 22px;
+        border-radius: 16px;
+        box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
+        margin-bottom: 18px;
+    }}
+
+    .app-btn {{
+        background: linear-gradient(90deg, {primary}, #4caf50);
+        color: white;
+        padding: 16px;
+        border-radius: 14px;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }}
+
+    [data-testid="stToggle"] label div {{
+        color: {text} !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ---------- HEADER ----------
+    st.markdown(f"""
+    <div class="app-header">
+        <h1>🐄 {lang['title']}</h1>
+        <p>{lang['subtitle']}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ---------- HOME ----------
+    st.markdown(f"""
+    <div class="card">
+        <h3>{lang['welcome']}</h3>
+        <p>{lang['desc']}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class="app-btn">🐄 {lang['animals']}</div>
+    <div class="app-btn">❤️ {lang['health']}</div>
+    <div class="app-btn">👨‍🌾 {lang['portal']}</div>
+    """, unsafe_allow_html=True)
+
+
+# ================= APP ROUTER =================
+if not st.session_state.logged_in:
+    login_page()
 else:
-    bg = "#f4f6f8"
-    card = "#ffffff"
-    text = "#000000"
-    subtext = "#000000"
-    primary = "#2e7d32"
-
-# ================= STYLES =================
-st.markdown(f"""
-<style>
-.stApp {{
-    background-color: {bg};
-    color: {text};
-}}
-
-.block-container {{
-    padding-top: 1rem;
-    padding-bottom: 6rem;
-}}
-
-.app-header {{
-    background: linear-gradient(90deg, {primary}, #4caf50);
-    padding: 26px;
-    border-radius: 18px;
-    color: white;
-    text-align: center;
-    margin-bottom: 28px;
-}}
-
-.card {{
-    background-color: {card};
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
-    margin-bottom: 18px;
-}}
-
-.card p {{
-    color: {subtext};
-    font-size: 16px;
-}}
-
-.app-btn {{
-    background: linear-gradient(90deg, {primary}, #4caf50);
-    color: white;
-    padding: 16px;
-    border-radius: 14px;
-    text-align: center;
-    font-size: 17px;
-    font-weight: 600;
-    margin-bottom: 14px;
-}}
-
-.bottom-nav {{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: {card};
-    border-top: 1px solid #ddd;
-    display: flex;
-    justify-content: space-around;
-    padding: 12px 0;
-}}
-
-.nav-item {{
-    font-size: 14px;
-    color: {subtext};
-}}
-
-[data-testid="stToggle"] label div {{
-    color: {text} !important;
-}}
-</style>
-""", unsafe_allow_html=True)
-
-# ================= HEADER =================
-st.markdown(f"""
-<div class="app-header">
-    <h1>🐄 {lang['title']}</h1>
-    <p>{lang['subtitle']}</p>
-</div>
-""", unsafe_allow_html=True)
-
-# ================= HOME CONTENT =================
-st.markdown(f"""
-<div class="card">
-    <h3>{lang['welcome']}</h3>
-    <p>{lang['desc']}</p>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-<div class="app-btn">🐄 {lang['animals']}</div>
-<div class="app-btn">❤️ {lang['health']}</div>
-<div class="app-btn">👨‍🌾 {lang['portal']}</div>
-""", unsafe_allow_html=True)
-
-# ================= BOTTOM NAV =================
-st.markdown("""
-<div class="bottom-nav">
-    <div class="nav-item">🏠 Home</div>
-    <div class="nav-item">🐄 Animals</div>
-    <div class="nav-item">❤️ Health</div>
-    <div class="nav-item">👤 Profile</div>
-</div>
-""", unsafe_allow_html=True)
+    main_app()
