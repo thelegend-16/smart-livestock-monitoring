@@ -1,64 +1,86 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Livestock App",
+    page_title="Livestock Care App",
     page_icon="🐄",
     layout="wide"
 )
 
-# ---------- APP STYLE ----------
-st.markdown("""
+# ---------- DARK MODE TOGGLE ----------
+dark_mode = st.toggle("🌙 Dark Mode", value=True)
+
+# ---------- COLORS BASED ON MODE ----------
+if dark_mode:
+    bg = "#0e1117"
+    card = "#161b22"
+    text = "#ffffff"
+    subtext = "#c9d1d9"
+    primary = "#2ea043"
+else:
+    bg = "#f4f6f8"
+    card = "#ffffff"
+    text = "#000000"
+    subtext = "#555555"
+    primary = "#2e7d32"
+
+# ---------- STYLES ----------
+st.markdown(f"""
 <style>
-body {
-    background-color: #f0f0f0;
-}
+body {{
+    background-color: {bg};
+    color: {text};
+}}
 
-/* Header */
-.app-header {
-    background-color: #4CAF50;
-    padding: 20px;
+.app-header {{
+    background: linear-gradient(90deg, {primary}, #4caf50);
+    padding: 28px;
+    border-radius: 18px;
     color: white;
     text-align: center;
-    margin-bottom: 20px;
-}
+    margin-bottom: 30px;
+}}
 
-/* Card */
-.card {
-    background-color: white;
-    padding: 15px;
-    border: 1px solid #ddd;
-    margin-bottom: 15px;
-}
+.card {{
+    background-color: {card};
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
+    margin-bottom: 18px;
+}}
 
-/* Button */
-.app-btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    text-align: center;
+.card p {{
+    color: {subtext};
     font-size: 16px;
-    margin-bottom: 10px;
-    border: none;
-    cursor: pointer;
-}
+}}
 
-/* Bottom Nav */
-.bottom-nav {
+.app-btn {{
+    background: linear-gradient(90deg, {primary}, #4caf50);
+    color: white;
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    cursor: pointer;
+}}
+
+.bottom-nav {{
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: white;
-    border-top: 1px solid #ddd;
+    background-color: {card};
+    border-top: 1px solid #333;
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
-}
+    padding: 12px 0;
+}}
 
-.nav-item {
+.nav-item {{
     font-size: 14px;
-    color: #444;
-}
+    color: {subtext};
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -70,17 +92,21 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ---------- HOME ACTIONS ----------
+# ---------- INTRO CARD (FIXED WHITE BOX) ----------
 st.markdown("""
 <div class="card">
     <h3>Welcome 👋</h3>
-    <p>Monitor livestock health, track animals, and connect with veterinarians using one app.</p>
+    <p>
+    Track livestock health, monitor activity, and connect with veterinarians —
+    all from a single smart app designed for farmers.
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
+# ---------- ACTION BUTTONS ----------
 st.markdown("""
-<div class="app-btn">🐄 View Animals</div>
-<div class="app-btn">❤️ Health Status</div>
+<div class="app-btn">🐄 Animals</div>
+<div class="app-btn">❤️ Health Monitoring</div>
 <div class="app-btn">👨‍🌾 Farmer / Vet Portal</div>
 """, unsafe_allow_html=True)
 
