@@ -6,8 +6,10 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- DARK MODE TOGGLE ----------
-dark_mode = st.toggle("🌙 Dark Mode", value=False)
+# ---------- TOP BAR (APP STYLE) ----------
+top_left, top_right = st.columns([8, 2])
+with top_right:
+    dark_mode = st.toggle("🌙 Dark Mode", value=False)
 
 # ---------- COLORS BASED ON MODE ----------
 if dark_mode:
@@ -33,7 +35,7 @@ st.markdown(f"""
     color: {text};
 }}
 
-/* Container spacing */
+/* Main container spacing */
 .block-container {{
     padding-top: 1.5rem;
     padding-bottom: 6rem;
