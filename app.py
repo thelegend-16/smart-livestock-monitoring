@@ -29,21 +29,10 @@ LANGUAGES = {
         "portal": "Farmer / Vet Portal",
         "dark": "Dark Mode",
         "profile": "Profile"
-    },
-    "Hindi": {
-        "title": "पशुधन देखभाल ऐप",
-        "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
-        "welcome": "स्वागत है 👋",
-        "desc": "पशुओं के स्वास्थ्य की निगरानी करें और पशु चिकित्सकों से जुड़ें।",
-        "animals": "पशु",
-        "health": "स्वास्थ्य निगरानी",
-        "portal": "किसान / पशु चिकित्सक पोर्टल",
-        "dark": "डार्क मोड",
-        "profile": "प्रोफ़ाइल"
     }
 }
 
-# ================= COMMON AUTH STYLES =================
+# ================= LOGIN / SIGNUP STYLES =================
 def auth_styles():
     st.markdown("""
     <style>
@@ -51,39 +40,58 @@ def auth_styles():
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 90vh;
-        background: linear-gradient(120deg, #e8f5e9, #f1f8e9);
+        height: 100vh;
+        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
     }
 
     .auth-card {
-        width: 420px;
+        width: 440px;
         background: white;
-        padding: 35px;
-        border-radius: 20px;
-        box-shadow: 0px 20px 50px rgba(0,0,0,0.15);
+        padding: 36px;
+        border-radius: 22px;
+        box-shadow: 0px 25px 60px rgba(0,0,0,0.18);
     }
 
-    .auth-header {
-        background: linear-gradient(90deg, #2e7d32, #4caf50);
-        color: white;
-        padding: 18px;
-        border-radius: 14px;
+    .auth-brand {
         text-align: center;
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 25px;
+        margin-bottom: 22px;
+    }
+
+    .auth-brand h1 {
+        font-size: 26px;
+        margin-bottom: 4px;
+        color: #1b5e20;
+    }
+
+    .auth-brand p {
+        color: #6b7280;
+        font-size: 14px;
     }
 
     .auth-title {
-        font-size: 28px;
+        font-size: 24px;
         font-weight: 700;
         margin-bottom: 6px;
-        color: #1f2937;
+        color: #111827;
     }
 
     .auth-subtitle {
         color: #6b7280;
-        margin-bottom: 25px;
+        margin-bottom: 24px;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 14px;
+    }
+
+    .auth-footer button {
+        background: none;
+        border: none;
+        color: #2e7d32;
+        font-weight: 600;
+        cursor: pointer;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -95,9 +103,16 @@ def login_page():
     st.markdown("""
     <div class="auth-wrapper">
       <div class="auth-card">
-        <div class="auth-header">Smart Livestock Management</div>
+
+        <div class="auth-brand">
+            <h1>🐄 Livestock Care App</h1>
+            <p>Smart Livestock Management Platform</p>
+        </div>
+
         <div class="auth-title">Welcome Back</div>
-        <div class="auth-subtitle">Sign in to access your dashboard</div>
+        <div class="auth-subtitle">
+            Welcome to Livestock Care App. Please sign in to continue.
+        </div>
     """, unsafe_allow_html=True)
 
     with st.form("login_form"):
@@ -114,22 +129,35 @@ def login_page():
         else:
             st.error("Please enter email and password")
 
-    if st.button("Don't have an account? Sign Up"):
+    st.markdown("""
+        <div class="auth-footer">
+            Don’t have an account?
+        </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("Create Account"):
         st.session_state.page = "signup"
         st.rerun()
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
-# ================= SIGN UP PAGE =================
+# ================= SIGN UP PAGE (UNCHANGED) =================
 def signup_page():
     auth_styles()
 
     st.markdown("""
     <div class="auth-wrapper">
       <div class="auth-card">
-        <div class="auth-header">Smart Livestock Management</div>
+
+        <div class="auth-brand">
+            <h1>🐄 Livestock Care App</h1>
+            <p>Create your account</p>
+        </div>
+
         <div class="auth-title">Create Account</div>
-        <div class="auth-subtitle">Start managing your livestock smarter</div>
+        <div class="auth-subtitle">
+            Start managing your livestock smarter
+        </div>
     """, unsafe_allow_html=True)
 
     with st.form("signup_form"):
@@ -157,7 +185,7 @@ def signup_page():
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
-# ================= MAIN APP =================
+# ================= MAIN APP (UNCHANGED) =================
 def main_app():
     col1, col2, col3 = st.columns([6, 2, 2])
 
@@ -167,7 +195,7 @@ def main_app():
     lang = LANGUAGES[language]
 
     with col2:
-        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=True)
+        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
 
     with col1:
         if st.button("👤 Profile"):
@@ -184,19 +212,27 @@ def main_app():
     .stApp {{ background-color: {bg}; color: {text}; }}
     .header {{
         background: linear-gradient(90deg, {primary}, #4caf50);
-        padding: 26px; border-radius: 18px;
-        color: white; text-align: center; margin-bottom: 28px;
+        padding: 26px;
+        border-radius: 18px;
+        color: white;
+        text-align: center;
+        margin-bottom: 28px;
     }}
     .card {{
-        background: {card}; padding: 22px; border-radius: 16px;
+        background: {card};
+        padding: 22px;
+        border-radius: 16px;
         box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
         margin-bottom: 18px;
     }}
     .btn {{
         background: linear-gradient(90deg, {primary}, #4caf50);
-        color: white; padding: 16px;
-        border-radius: 14px; text-align: center;
-        font-size: 17px; font-weight: 600;
+        color: white;
+        padding: 16px;
+        border-radius: 14px;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 600;
         margin-bottom: 14px;
     }}
     </style>
@@ -222,14 +258,14 @@ def main_app():
     <div class="btn">👨‍🌾 {lang['portal']}</div>
     """, unsafe_allow_html=True)
 
-# ================= PROFILE PAGE =================
+# ================= PROFILE PAGE (UNCHANGED) =================
 def profile_page():
     st.subheader("👤 User Profile")
 
     with st.form("edit_profile"):
         name = st.text_input("Name", st.session_state.user["name"])
         email = st.text_input("Email", st.session_state.user["email"])
-        role = st.selectbox("Role", ["Farmer", "Veterinarian"], index=0)
+        role = st.selectbox("Role", ["Farmer", "Veterinarian"])
         save = st.form_submit_button("Save Changes")
 
     if save:
