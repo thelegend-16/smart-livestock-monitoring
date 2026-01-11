@@ -11,27 +11,45 @@ if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
     st.session_state.user_role = None
 
+
 # ================= LOGIN PAGE =================
 def login_page():
     st.markdown("""
     <style>
-    .login-box {
-        max-width: 400px;
-        margin: auto;
-        background: white;
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 85vh;
+    }
+
+    .login-card {
+        width: 380px;
+        background: #161b22;
         padding: 30px;
-        border-radius: 16px;
-        box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
-        margin-top: 100px;
+        border-radius: 18px;
+        box-shadow: 0px 15px 40px rgba(0,0,0,0.5);
+        color: white;
+    }
+
+    .login-card h2 {
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .login-card p {
+        text-align: center;
+        color: #9ba3af;
+        margin-bottom: 25px;
     }
     </style>
     """, unsafe_allow_html=True)
 
     st.markdown("""
-    <div class="login-box">
-        <h2 style="text-align:center;">🐄 Livestock Care App</h2>
-        <p style="text-align:center;">Login to continue</p>
-    </div>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2>🐄 Livestock Care App</h2>
+            <p>Login to continue</p>
     """, unsafe_allow_html=True)
 
     with st.form("login_form"):
@@ -48,6 +66,9 @@ def login_page():
         else:
             st.error("Please enter username and password")
 
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+
 # ================= MAIN APP =================
 def main_app():
 
@@ -61,21 +82,7 @@ def main_app():
             "animals": "Animals",
             "health": "Health Monitoring",
             "portal": "Farmer / Vet Portal",
-            "controls": "App Controls",
-            "settings": "App Settings",
             "dark": "Dark Mode"
-        },
-        "Hindi": {
-            "title": "पशुधन देखभाल ऐप",
-            "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
-            "welcome": "स्वागत है 👋",
-            "desc": "पशुओं के स्वास्थ्य की निगरानी करें और पशु चिकित्सकों से जुड़ें।",
-            "animals": "पशु",
-            "health": "स्वास्थ्य निगरानी",
-            "portal": "किसान / पशु चिकित्सक पोर्टल",
-            "controls": "ऐप नियंत्रण",
-            "settings": "ऐप सेटिंग्स",
-            "dark": "डार्क मोड"
         }
     }
 
@@ -93,13 +100,13 @@ def main_app():
         dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
 
     with col1:
-        with st.expander(f"⚙️ {lang['settings']}"):
+        with st.expander("⚙️ App Settings"):
             st.write(f"Logged in as: **{st.session_state.user_role}**")
             if st.button("Logout"):
                 st.session_state.logged_in = False
                 st.experimental_rerun()
 
-    # ---------- THEME COLORS ----------
+    # ---------- THEME ----------
     if dark_mode:
         bg = "#0e1117"
         card = "#161b22"
@@ -178,7 +185,7 @@ def main_app():
     """, unsafe_allow_html=True)
 
 
-# ================= APP ROUTER =================
+# ================= ROUTER =================
 if not st.session_state.logged_in:
     login_page()
 else:
