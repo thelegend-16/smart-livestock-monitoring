@@ -18,7 +18,6 @@ if "user" not in st.session_state:
 if "attendance_logs" not in st.session_state:
     st.session_state.attendance_logs = []
 
-# Sub-routing for the dashboard
 if "sub_page" not in st.session_state:
     st.session_state.sub_page = "home"
 
@@ -30,7 +29,7 @@ LANGUAGES = {
     "English": {
         "title": "Livestock Care App",
         "subtitle": "Smart monitoring for modern farmers",
-        "welcome": "Welcome,",
+        "welcome": "Welcome back,",
         "desc": "Track livestock health and manage your farm operations.",
         "animals": "My Animals",
         "health": "Health Monitoring",
@@ -112,6 +111,17 @@ def main_app():
     .main-header {{ background: linear-gradient(135deg, {primary}, #81c784); padding: 30px; border-radius: 20px; color: white; text-align: center; margin-bottom: 25px; }}
     h1, h2, h3, p {{ color: {text} !important; }}
     .main-header h1, .main-header p {{ color: white !important; }}
+    
+    /* Feature Card Styles */
+    .feature-box {{
+        text-align: center;
+        padding: 25px;
+        border: 2px solid {primary};
+        border-radius: 20px;
+        background: {card};
+        margin-bottom: 15px;
+        transition: 0.3s;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -122,44 +132,60 @@ def main_app():
 
     # --- SUB-PAGE ROUTING ---
     if st.session_state.sub_page == "home":
-        render_home(lang, primary, card)
+        render_home(lang, primary)
     elif st.session_state.sub_page == "animals":
         render_animals(lang)
     elif st.session_state.sub_page == "health":
         render_health(lang)
     elif st.session_state.sub_page == "portal":
         render_vet_portal(lang)
+    elif st.session_state.sub_page == "attendance_view":
+        render_attendance(lang)
 
-def render_home(lang, primary, card):
+def render_home(lang, primary):
     st.markdown(f'<div class="main-header"><h1>🐄 {lang["title"]}</h1><p>{lang["subtitle"]}</p></div>', unsafe_allow_html=True)
     
-    # Attendance
-    st.subheader(f"📅 {lang['attendance']}")
-    c1, c2 = st.columns([1, 2])
-    with c1:
-        if st.button("✅ Mark Attendance", use_container_width=True):
-            st.session_state.attendance_logs.insert(0, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-            st.success("Attendance Marked!")
-    with c2:
-        with st.expander("View History"):
-            for log in st.session_state.attendance_logs[:5]: st.write(f"📍 Present: {log}")
-
+    st.markdown(f"### {lang['welcome']} {st.session_state.user['name']} 👋")
+    st.write(lang['desc'])
     st.divider()
     
-    # Feature Buttons (Making them work)
-    fa, fb, fc = st.columns(3)
-    with fa:
-        st.markdown(f'<div style="text-align:center; padding:20px; border:2px solid {primary}; border-radius:15px;">🐄<br><b>{lang["animals"]}</b></div>', unsafe_allow_html=True)
+    # Feature Buttons Grid - Now Includes Attendance
+    col1, col2 = st.columns(2)
+    col3, col4 = st.columns(2)
+
+    with col1:
+        st.markdown(f'<div class="feature-box">🐄<br><b>{lang["animals"]}</b></div>', unsafe_allow_html=True)
         if st.button("Manage Herd", use_container_width=True): 
             st.session_state.sub_page = "animals"; st.rerun()
-    with fb:
-        st.markdown(f'<div style="text-align:center; padding:20px; border:2px solid {primary}; border-radius:15px;">❤️<br><b>{lang["health"]}</b></div>', unsafe_allow_html=True)
+    with col2:
+        st.markdown(f'<div class="feature-box">❤️<br><b>{lang["health"]}</b></div>', unsafe_allow_html=True)
         if st.button("Check Vitals", use_container_width=True): 
             st.session_state.sub_page = "health"; st.rerun()
-    with fc:
-        st.markdown(f'<div style="text-align:center; padding:20px; border:2px solid {primary}; border-radius:15px;">👨‍🌾<br><b>{lang["portal"]}</b></div>', unsafe_allow_html=True)
-        if st.button("Find Vets", use_container_width=True): 
+    with col3:
+        st.markdown(f'<div class="feature-box">👨‍🌾<br><b>{lang["portal"]}</b></div>', unsafe_allow_html=True)
+        if st.button("Find Nearby Vets", use_container_width=True): 
             st.session_state.sub_page = "portal"; st.rerun()
+    with col4:
+        st.markdown(f'<div class="feature-box">📅<br><b>{lang["attendance"]}</b></div>', unsafe_allow_html=True)
+        if st.button("Mark & View Attendance", use_container_width=True): 
+            st.session_state.sub_page = "attendance_view"; st.rerun()
+
+def render_attendance(lang):
+    st.header(f"📅 {lang['attendance']}")
+    
+    # Mark Attendance Action
+    if st.button("✅ Mark Present Today", type="primary", use_container_width=True):
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        st.session_state.attendance_logs.insert(0, now)
+        st.success(f"Attendance Recorded: {now}")
+    
+    st.divider()
+    st.subheader("Attendance History")
+    if st.session_state.attendance_logs:
+        df_att = pd.DataFrame(st.session_state.attendance_logs, columns=["Timestamp"])
+        st.table(df_att)
+    else:
+        st.info("No records found.")
 
 def render_animals(lang):
     st.header(f"🐄 {lang['animals']}")
@@ -176,21 +202,16 @@ def render_animals(lang):
 
 def render_health(lang):
     st.header(f"❤️ {lang['health']}")
-    st.info("Live Monitoring coming soon with IoT sensors.")
     st.metric("Average Herd Temp", "38.5 °C", "Stable")
     st.metric("Activity Level", "High", "+5%")
 
 def render_vet_portal(lang):
     st.header(f"👨‍⚕️ {lang['portal']}")
     st.subheader("Nearby Veterinarians")
-    
-    # Mock Data for nearby vets
     vets = [
         {"Name": "Dr. Sharma", "Specialty": "Large Animals", "Distance": "2.5 km", "Contact": "+91 98765 43210"},
-        {"Name": "Dr. Verma", "Specialty": "Vaccinations", "Distance": "4.1 km", "Contact": "+91 87654 32109"},
-        {"Name": "Dr. Singh", "Specialty": "General Physician", "Distance": "5.8 km", "Contact": "+91 76543 21098"}
+        {"Name": "Dr. Verma", "Specialty": "Vaccinations", "Distance": "4.1 km", "Contact": "+91 87654 32109"}
     ]
-    
     for v in vets:
         with st.container(border=True):
             v_col1, v_col2 = st.columns([3, 1])
