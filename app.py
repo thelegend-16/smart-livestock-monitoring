@@ -62,7 +62,7 @@ def login_page():
         if username and password:
             st.session_state.logged_in = True
             st.session_state.user_role = role
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Please enter username and password")
 
@@ -72,7 +72,6 @@ def login_page():
 # ================= MAIN APP =================
 def main_app():
 
-    # ---------- LANGUAGE DATA ----------
     LANGUAGES = {
         "English": {
             "title": "Livestock Care App",
@@ -104,7 +103,7 @@ def main_app():
             st.write(f"Logged in as: **{st.session_state.user_role}**")
             if st.button("Logout"):
                 st.session_state.logged_in = False
-                st.experimental_rerun()
+                st.rerun()
 
     # ---------- THEME ----------
     if dark_mode:
