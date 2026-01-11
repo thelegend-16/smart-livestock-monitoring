@@ -1,6 +1,7 @@
 import streamlit as st
 from datetime import datetime
 import pandas as pd
+from PIL import Image
 
 st.set_page_config(
     page_title="Smart Livestock Management",
@@ -36,7 +37,8 @@ LANGUAGES = {
         "portal": "Farmer / Vet Portal",
         "dark": "Dark Mode",
         "profile": "Profile",
-        "attendance": "Attendance"
+        "attendance": "Attendance",
+        "camera": "Camera & Upload"
     },
     "Hindi": {
         "title": "पशुधन देखभाल ऐप",
@@ -48,7 +50,8 @@ LANGUAGES = {
         "portal": "किसान / पशु चिकित्सक पोर्टल",
         "dark": "डार्क मोड",
         "profile": "प्रोफ़ाइल",
-        "attendance": "उपस्थिति"
+        "attendance": "उपस्थिति",
+        "camera": "कैमरा और अपलोड"
     }
 }
 
@@ -112,7 +115,7 @@ def main_app():
     h1, h2, h3, p {{ color: {text} !important; }}
     .main-header h1, .main-header p {{ color: white !important; }}
     
-    /* Feature Card Styles */
+    /* Feature Box Styles */
     .feature-box {{
         text-align: center;
         padding: 25px;
@@ -120,12 +123,11 @@ def main_app():
         border-radius: 20px;
         background: {card};
         margin-bottom: 15px;
-        transition: 0.3s;
     }}
     </style>
     """, unsafe_allow_html=True)
 
-    # Sidebar Navigation or Home Button
+    # Back button for sub-pages
     if st.session_state.sub_page != "home":
         if st.button("⬅ Back to Dashboard"): 
             st.session_state.sub_page = "home"; st.rerun()
@@ -141,51 +143,69 @@ def main_app():
         render_vet_portal(lang)
     elif st.session_state.sub_page == "attendance_view":
         render_attendance(lang)
+    elif st.session_state.sub_page == "camera_view":
+        render_camera(lang)
 
 def render_home(lang, primary):
     st.markdown(f'<div class="main-header"><h1>🐄 {lang["title"]}</h1><p>{lang["subtitle"]}</p></div>', unsafe_allow_html=True)
     
     st.markdown(f"### {lang['welcome']} {st.session_state.user['name']} 👋")
-    st.write(lang['desc'])
     st.divider()
     
-    # Feature Buttons Grid - Now Includes Attendance
-    col1, col2 = st.columns(2)
-    col3, col4 = st.columns(2)
+    # Grid Layout for all 5 buttons
+    row1_col1, row1_col2 = st.columns(2)
+    row2_col1, row2_col2 = st.columns(2)
+    row3_col1, row3_col2 = st.columns(2)
 
-    with col1:
+    with row1_col1:
         st.markdown(f'<div class="feature-box">🐄<br><b>{lang["animals"]}</b></div>', unsafe_allow_html=True)
         if st.button("Manage Herd", use_container_width=True): 
             st.session_state.sub_page = "animals"; st.rerun()
-    with col2:
+    with row1_col2:
         st.markdown(f'<div class="feature-box">❤️<br><b>{lang["health"]}</b></div>', unsafe_allow_html=True)
         if st.button("Check Vitals", use_container_width=True): 
             st.session_state.sub_page = "health"; st.rerun()
-    with col3:
+    with row2_col1:
         st.markdown(f'<div class="feature-box">👨‍🌾<br><b>{lang["portal"]}</b></div>', unsafe_allow_html=True)
         if st.button("Find Nearby Vets", use_container_width=True): 
             st.session_state.sub_page = "portal"; st.rerun()
-    with col4:
+    with row2_col2:
         st.markdown(f'<div class="feature-box">📅<br><b>{lang["attendance"]}</b></div>', unsafe_allow_html=True)
         if st.button("Mark & View Attendance", use_container_width=True): 
             st.session_state.sub_page = "attendance_view"; st.rerun()
+    with row3_col1:
+        st.markdown(f'<div class="feature-box">📸<br><b>{lang["camera"]}</b></div>', unsafe_allow_html=True)
+        if st.button("Open Camera/Upload", use_container_width=True): 
+            st.session_state.sub_page = "camera_view"; st.rerun()
+
+def render_camera(lang):
+    st.header(f"📸 {lang['camera']}")
+    st.write("Take a picture of your livestock or upload an image to track health issues.")
+    
+    tab1, tab2 = st.tabs(["📷 Take Photo", "📁 Upload Image"])
+    
+    with tab1:
+        img_file = st.camera_input("Capture Animal Image")
+        if img_file:
+            st.image(img_file, caption="Captured Image", use_container_width=True)
+            st.success("Photo captured successfully!")
+
+    with tab2:
+        uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+        if uploaded_file is not None:
+            image = Image.open(uploaded_file)
+            st.image(image, caption="Uploaded Image", use_container_width=True)
+            st.success("File uploaded successfully!")
 
 def render_attendance(lang):
     st.header(f"📅 {lang['attendance']}")
-    
-    # Mark Attendance Action
     if st.button("✅ Mark Present Today", type="primary", use_container_width=True):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         st.session_state.attendance_logs.insert(0, now)
         st.success(f"Attendance Recorded: {now}")
-    
     st.divider()
-    st.subheader("Attendance History")
     if st.session_state.attendance_logs:
-        df_att = pd.DataFrame(st.session_state.attendance_logs, columns=["Timestamp"])
-        st.table(df_att)
-    else:
-        st.info("No records found.")
+        st.table(pd.DataFrame(st.session_state.attendance_logs, columns=["Timestamp"]))
 
 def render_animals(lang):
     st.header(f"🐄 {lang['animals']}")
@@ -208,21 +228,12 @@ def render_health(lang):
 def render_vet_portal(lang):
     st.header(f"👨‍⚕️ {lang['portal']}")
     st.subheader("Nearby Veterinarians")
-    vets = [
-        {"Name": "Dr. Sharma", "Specialty": "Large Animals", "Distance": "2.5 km", "Contact": "+91 98765 43210"},
-        {"Name": "Dr. Verma", "Specialty": "Vaccinations", "Distance": "4.1 km", "Contact": "+91 87654 32109"}
-    ]
+    vets = [{"Name": "Dr. Sharma", "Distance": "2.5 km"}, {"Name": "Dr. Verma", "Distance": "4.1 km"}]
     for v in vets:
         with st.container(border=True):
-            v_col1, v_col2 = st.columns([3, 1])
-            with v_col1:
-                st.markdown(f"**{v['Name']}** ({v['Specialty']})")
-                st.caption(f"📍 {v['Distance']} away")
-            with v_col2:
-                if st.button(f"📞 Call", key=v['Name']):
-                    st.success(f"Connecting to {v['Contact']}...")
+            st.write(f"**{v['Name']}** - {v['Distance']} away")
+            if st.button(f"📞 Call {v['Name']}"): st.success("Calling...")
 
-# ================= SIGNUP & PROFILE =================
 def signup_page():
     auth_styles()
     _, col2, _ = st.columns([1, 1.5, 1])
