@@ -47,43 +47,68 @@ LANGUAGES = {
 def auth_styles():
     st.markdown("""
     <style>
-    .auth-wrapper {
+    /* Global Background */
+    .stApp {
+        background: #f8fafc;
+    }
+
+    /* Modern Card Styling */
+    .login-container {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
         align-items: center;
-        height: 90vh;
-        background: linear-gradient(120deg, #e8f5e9, #f1f8e9);
+        justify-content: center;
     }
-
-    .auth-card {
-        width: 420px;
+    
+    .login-box {
         background: white;
-        padding: 35px;
-        border-radius: 20px;
-        box-shadow: 0px 20px 50px rgba(0,0,0,0.15);
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        width: 100%;
     }
 
-    .auth-header {
-        background: linear-gradient(90deg, #2e7d32, #4caf50);
-        color: white;
-        padding: 18px;
-        border-radius: 14px;
-        text-align: center;
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 25px;
-    }
-
-    .auth-title {
-        font-size: 28px;
+    .welcome-text {
+        color: #2e7d32;
         font-weight: 700;
-        margin-bottom: 6px;
-        color: #1f2937;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 13px;
     }
 
-    .auth-subtitle {
-        color: #6b7280;
+    .main-title {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+
+    .sub-title {
+        color: #64748b;
         margin-bottom: 25px;
+        font-size: 15px;
+    }
+
+    /* Styling the Form Submit Button */
+    div[data-testid="stFormSubmitButton"] > button {
+        width: 100%;
+        border-radius: 10px !important;
+        height: 3.5em !important;
+        background: linear-gradient(90deg, #2e7d32, #4caf50) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
+    }
+    
+    /* "Create account" link button styling */
+    div.stButton > button {
+        background-color: transparent;
+        color: #2e7d32;
+        border: 1px solid #2e7d32;
+        width: 100%;
+        border-radius: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -92,70 +117,80 @@ def auth_styles():
 def login_page():
     auth_styles()
 
-    st.markdown("""
-    <div class="auth-wrapper">
-      <div class="auth-card">
-        <div class="auth-header">Smart Livestock Management</div>
-        <div class="auth-title">Welcome Back</div>
-        <div class="auth-subtitle">Sign in to access your dashboard</div>
-    """, unsafe_allow_html=True)
+    # Center the login box
+    _, col2, _ = st.columns([1, 1.5, 1])
 
-    with st.form("login_form"):
-        email = st.text_input("Email")
-        password = st.text_input("Password", type="password")
-        submit = st.form_submit_button("Sign In")
+    with col2:
+        st.markdown('<div class="login-container">', unsafe_allow_html=True)
+        
+        # Header text outside the form for better styling
+        st.markdown("""
+            <div class="welcome-text">Welcome to Livestock Care App</div>
+            <div class="main-title">Sign In</div>
+            <div class="sub-title">Enter your credentials to access your dashboard.</div>
+        """, unsafe_allow_html=True)
 
-    if submit:
-        if email and password:
-            st.session_state.user["email"] = email
-            st.session_state.user["name"] = email.split("@")[0].title()
-            st.session_state.page = "app"
+        with st.form("login_form"):
+            email = st.text_input("Email Address", placeholder="farmer@example.com")
+            password = st.text_input("Password", type="password", placeholder="••••••••")
+            st.checkbox("Remember me", value=True)
+            submit = st.form_submit_button("Access Dashboard")
+
+        if submit:
+            if email and password:
+                st.session_state.user["email"] = email
+                st.session_state.user["name"] = email.split("@")[0].title()
+                st.session_state.page = "app"
+                st.rerun()
+            else:
+                st.error("Please enter email and password")
+
+        st.markdown("<div style='margin-top: 20px; text-align: center; width: 100%;'>", unsafe_allow_html=True)
+        if st.button("New here? Create an account"):
+            st.session_state.page = "signup"
             st.rerun()
-        else:
-            st.error("Please enter email and password")
-
-    if st.button("Don't have an account? Sign Up"):
-        st.session_state.page = "signup"
-        st.rerun()
-
-    st.markdown("</div></div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= SIGN UP PAGE =================
 def signup_page():
     auth_styles()
 
-    st.markdown("""
-    <div class="auth-wrapper">
-      <div class="auth-card">
-        <div class="auth-header">Smart Livestock Management</div>
-        <div class="auth-title">Create Account</div>
-        <div class="auth-subtitle">Start managing your livestock smarter</div>
-    """, unsafe_allow_html=True)
+    _, col2, _ = st.columns([1, 1.5, 1])
 
-    with st.form("signup_form"):
-        name = st.text_input("Full Name")
-        email = st.text_input("Email")
-        role = st.selectbox("Role", ["Farmer", "Veterinarian"])
-        password = st.text_input("Password", type="password")
-        submit = st.form_submit_button("Sign Up")
+    with col2:
+        st.markdown('<div class="login-container">', unsafe_allow_html=True)
+        st.markdown("""
+            <div class="welcome-text">Join us today</div>
+            <div class="main-title">Create Account</div>
+            <div class="sub-title">Start managing your livestock smarter.</div>
+        """, unsafe_allow_html=True)
 
-    if submit:
-        if name and email and password:
-            st.session_state.user = {
-                "name": name,
-                "email": email,
-                "role": role
-            }
-            st.session_state.page = "app"
+        with st.form("signup_form"):
+            name = st.text_input("Full Name", placeholder="John Doe")
+            email = st.text_input("Email", placeholder="john@example.com")
+            role = st.selectbox("Role", ["Farmer", "Veterinarian"])
+            password = st.text_input("Password", type="password", placeholder="••••••••")
+            submit = st.form_submit_button("Sign Up")
+
+        if submit:
+            if name and email and password:
+                st.session_state.user = {
+                    "name": name,
+                    "email": email,
+                    "role": role
+                }
+                st.session_state.page = "app"
+                st.rerun()
+            else:
+                st.error("Please fill all details")
+
+        if st.button("Already have an account? Login"):
+            st.session_state.page = "login"
             st.rerun()
-        else:
-            st.error("Fill all details")
-
-    if st.button("Already have an account? Login"):
-        st.session_state.page = "login"
-        st.rerun()
-
-    st.markdown("</div></div>", unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= MAIN APP =================
 def main_app():
@@ -167,7 +202,7 @@ def main_app():
     lang = LANGUAGES[language]
 
     with col2:
-        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=True)
+        dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
 
     with col1:
         if st.button("👤 Profile"):
@@ -192,12 +227,13 @@ def main_app():
         box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
         margin-bottom: 18px;
     }}
-    .btn {{
+    .btn-custom {{
         background: linear-gradient(90deg, {primary}, #4caf50);
         color: white; padding: 16px;
         border-radius: 14px; text-align: center;
         font-size: 17px; font-weight: 600;
         margin-bottom: 14px;
+        cursor: pointer;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -211,15 +247,15 @@ def main_app():
 
     st.markdown(f"""
     <div class="card">
-      <h3>{lang['welcome']} {st.session_state.user['name']}</h3>
+      <h3 style="color: {primary if not dark_mode else '#4caf50'};">{lang['welcome']} {st.session_state.user['name']}</h3>
       <p>{lang['desc']}</p>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
-    <div class="btn">🐄 {lang['animals']}</div>
-    <div class="btn">❤️ {lang['health']}</div>
-    <div class="btn">👨‍🌾 {lang['portal']}</div>
+    <div class="btn-custom">🐄 {lang['animals']}</div>
+    <div class="btn-custom">❤️ {lang['health']}</div>
+    <div class="btn-custom">👨‍🌾 {lang['portal']}</div>
     """, unsafe_allow_html=True)
 
 # ================= PROFILE PAGE =================
