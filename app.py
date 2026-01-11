@@ -6,16 +6,21 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- TOP SETTINGS BAR ----------
-top_left, top_mid, top_right = st.columns([6, 2, 2])
+# ================= TOP SETTINGS STRIP =================
+st.markdown("### ⚙️ App Controls")
 
-with top_mid:
-    settings_clicked = st.button("⚙️ Settings")
+col1, col2 = st.columns([8, 2])
 
-with top_right:
-    dark_mode = st.toggle("🌙 Dark", value=False)
+with col2:
+    dark_mode = st.toggle("🌙 Dark Mode", value=False)
 
-# ---------- COLORS BASED ON MODE ----------
+with col1:
+    with st.expander("⚙️ App Settings"):
+        st.write("• Notifications (coming soon)")
+        st.write("• Language (coming soon)")
+        st.write("• Profile settings (coming soon)")
+
+# ================= THEME COLORS =================
 if dark_mode:
     bg = "#0e1117"
     card = "#161b22"
@@ -29,7 +34,7 @@ else:
     subtext = "#555555"
     primary = "#2e7d32"
 
-# ---------- STYLES ----------
+# ================= STYLES =================
 st.markdown(f"""
 <style>
 .stApp {{
@@ -38,24 +43,17 @@ st.markdown(f"""
 }}
 
 .block-container {{
-    padding-top: 0.5rem;
+    padding-top: 1rem;
     padding-bottom: 6rem;
-}}
-
-.top-bar {{
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-bottom: 10px;
 }}
 
 .app-header {{
     background: linear-gradient(90deg, {primary}, #4caf50);
-    padding: 28px;
+    padding: 26px;
     border-radius: 18px;
     color: white;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
 }}
 
 .card {{
@@ -101,18 +99,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- OPTIONAL SETTINGS PANEL ----------
-if settings_clicked:
-    st.markdown("""
-    <div class="card">
-        <h3>⚙️ App Settings</h3>
-        <p>• Notifications (coming soon)</p>
-        <p>• Language selection (coming soon)</p>
-        <p>• User profile settings (coming soon)</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ---------- HEADER ----------
+# ================= APP HEADER =================
 st.markdown("""
 <div class="app-header">
     <h1>🐄 Livestock Care App</h1>
@@ -120,7 +107,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ---------- HOME CONTENT ----------
+# ================= HOME CONTENT =================
 st.markdown("""
 <div class="card">
     <h3>Welcome 👋</h3>
@@ -137,7 +124,7 @@ st.markdown("""
 <div class="app-btn">👨‍🌾 Farmer / Vet Portal</div>
 """, unsafe_allow_html=True)
 
-# ---------- BOTTOM NAV ----------
+# ================= BOTTOM NAV =================
 st.markdown("""
 <div class="bottom-nav">
     <div class="nav-item">🏠 Home</div>
