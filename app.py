@@ -43,8 +43,9 @@ LANGUAGES = {
     }
 }
 
-# ================= COMMON AUTH STYLES =================
+# ================= AUTH STYLES (FIXED VISIBILITY) =================
 def auth_styles():
+    # Detect if user is likely in dark mode to set initial visibility
     st.markdown("""
     <style>
     .login-container {
@@ -53,12 +54,14 @@ def auth_styles():
         align-items: center;
         justify-content: center;
         padding: 40px;
-        background: white;
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 24px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
     }
+    /* FIX: Using forced white for dark background and dynamic for light */
     .welcome-header {
-        color: #2e7d32;
+        color: #4caf50;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1.2px;
@@ -66,13 +69,13 @@ def auth_styles():
         margin-bottom: 10px;
     }
     .main-title {
-        font-size: 30px;
+        font-size: 32px;
         font-weight: 800;
-        color: #1e293b;
+        color: white !important; /* Forced white for login visibility */
         margin-bottom: 5px;
     }
     .sub-title {
-        color: #64748b;
+        color: #cbd5e1 !important; /* Light grey for visibility */
         margin-bottom: 30px;
         font-size: 16px;
     }
@@ -91,6 +94,7 @@ def auth_styles():
 # ================= LOGIN PAGE =================
 def login_page():
     auth_styles()
+    # Centering the login card
     _, col2, _ = st.columns([1, 1.2, 1])
     with col2:
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
@@ -100,7 +104,7 @@ def login_page():
         
         with st.form("login_form"):
             email = st.text_input("Email Address", placeholder="e.g., farmer@domain.com")
-            password = st.text_input("Password", type="password", placeholder="••••••••")
+            password = st.text_input("Password", type="password")
             submit = st.form_submit_button("Access Dashboard")
 
         if submit:
@@ -112,7 +116,6 @@ def login_page():
             else:
                 st.error("Missing credentials")
 
-        st.markdown("<br>", unsafe_allow_html=True)
         if st.button("New User? Create Account"):
             st.session_state.page = "signup"
             st.rerun()
@@ -128,8 +131,8 @@ def signup_page():
         st.markdown('<div class="sub-title">Start your smart farming journey today.</div>', unsafe_allow_html=True)
         
         with st.form("signup_form"):
-            name = st.text_input("Full Name", placeholder="John Doe")
-            email = st.text_input("Email", placeholder="john@example.com")
+            name = st.text_input("Full Name")
+            email = st.text_input("Email")
             role = st.selectbox("I am a...", ["Farmer", "Veterinarian"])
             password = st.text_input("Password", type="password")
             submit = st.form_submit_button("Create Account")
@@ -161,13 +164,11 @@ def main_app():
             st.session_state.page = "profile"
             st.rerun()
 
-    # Dynamic Theme Injection
+    # Dynamic Theme Colors (FIXED FOR VISIBILITY)
     if dark_mode:
         bg, card, text, primary = "#0e1117", "#1c2128", "#FFFFFF", "#4caf50"
-        shadow = "rgba(0,0,0,0.5)"
     else:
         bg, card, text, primary = "#F8FAFC", "#FFFFFF", "#1E293B", "#2e7d32"
-        shadow = "rgba(0,0,0,0.05)"
 
     st.markdown(f"""
     <style>
@@ -178,35 +179,28 @@ def main_app():
         background: linear-gradient(135deg, {primary}, #81c784);
         padding: 40px; border-radius: 24px;
         color: white !important; text-align: center;
-        margin-bottom: 30px; box-shadow: 0 10px 20px {shadow};
+        margin-bottom: 30px;
     }}
-    .app-header h1, .app-header p {{ color: white !important; margin: 0; }}
+    .app-header h1, .app-header p {{ color: white !important; }}
 
     /* Content Card */
     .content-card {{
         background: {card}; padding: 25px; border-radius: 20px;
-        box-shadow: 0 4px 15px {shadow}; margin-bottom: 25px;
-        border: 1px solid {primary}33;
+        margin-bottom: 25px; border: 1px solid {primary}33;
     }}
     .content-card h3, .content-card p {{ color: {text} !important; }}
 
-    /* Interactive Buttons */
+    /* Nav Buttons */
     .nav-btn {{
         background: {card}; border: 2px solid {primary};
         color: {text} !important; padding: 20px;
         border-radius: 15px; text-align: center;
         font-weight: 700; font-size: 18px;
-        margin-bottom: 15px; transition: 0.3s ease;
-        cursor: pointer; box-shadow: 0 4px 6px {shadow};
-    }}
-    .nav-btn:hover {{
-        background: {primary}; color: white !important;
-        transform: translateY(-3px);
+        margin-bottom: 15px; cursor: pointer;
     }}
     </style>
     """, unsafe_allow_html=True)
 
-    # UI Elements
     st.markdown(f"""
     <div class="app-header">
       <h1>🐄 {lang['title']}</h1>
@@ -221,44 +215,29 @@ def main_app():
     </div>
     """, unsafe_allow_html=True)
 
-    # Actionable Grid
     col_a, col_b, col_c = st.columns(3)
-    with col_a:
-        st.markdown(f'<div class="nav-btn">🐄<br>{lang["animals"]}</div>', unsafe_allow_html=True)
-    with col_b:
-        st.markdown(f'<div class="nav-btn">❤️<br>{lang["health"]}</div>', unsafe_allow_html=True)
-    with col_c:
-        st.markdown(f'<div class="nav-btn">👨‍🌾<br>{lang["portal"]}</div>', unsafe_allow_html=True)
-
-    # Added a simple metric bar to make it feel more "real"
-    st.write("---")
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Active Herd", "24", "+2")
-    m2.metric("Pending Checkups", "3", "-1")
-    m3.metric("Feed Stock", "85%", "Stable")
+    with col_a: st.markdown(f'<div class="nav-btn">🐄<br>{lang["animals"]}</div>', unsafe_allow_html=True)
+    with col_b: st.markdown(f'<div class="nav-btn">❤️<br>{lang["health"]}</div>', unsafe_allow_html=True)
+    with col_c: st.markdown(f'<div class="nav-btn">👨‍🌾<br>{lang["portal"]}</div>', unsafe_allow_html=True)
 
 # ================= PROFILE PAGE =================
 def profile_page():
     st.markdown("### 👤 Account Settings")
-    with st.container(border=True):
-        with st.form("edit_profile"):
-            name = st.text_input("Name", st.session_state.user["name"])
-            email = st.text_input("Email", st.session_state.user["email"])
-            role = st.selectbox("Role", ["Farmer", "Veterinarian"], index=0)
-            if st.form_submit_button("Save Updates"):
-                st.session_state.user.update({"name": name, "email": email, "role": role})
-                st.success("Profile synced successfully!")
+    with st.form("edit_profile"):
+        name = st.text_input("Name", st.session_state.user["name"])
+        email = st.text_input("Email", st.session_state.user["email"])
+        role = st.selectbox("Role", ["Farmer", "Veterinarian"], index=0)
+        if st.form_submit_button("Save Updates"):
+            st.session_state.user.update({"name": name, "email": email, "role": role})
+            st.success("Profile saved!")
 
-    c1, c2 = st.columns([1,1])
-    with c1:
-        if st.button("⬅ Dashboard", use_container_width=True):
-            st.session_state.page = "app"
-            st.rerun()
-    with c2:
-        if st.button("🚪 Sign Out", type="primary", use_container_width=True):
-            st.session_state.page = "login"
-            st.session_state.user = {"name": "", "email": "", "role": "Farmer"}
-            st.rerun()
+    if st.button("⬅ Dashboard"):
+        st.session_state.page = "app"
+        st.rerun()
+    if st.button("🚪 Sign Out", type="primary"):
+        st.session_state.page = "login"
+        st.session_state.user = {"name": "", "email": "", "role": "Farmer"}
+        st.rerun()
 
 # ================= ROUTER =================
 if st.session_state.page == "login":
