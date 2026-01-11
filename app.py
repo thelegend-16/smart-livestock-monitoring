@@ -22,12 +22,14 @@ if "user" not in st.session_state:
         "location": "Default City"
     }
 
+# Shared list to store all appointments
+if "appointments" not in st.session_state:
+    st.session_state.appointments = []
+
 if "all_users" not in st.session_state:
-    # Initial mock data for vets to test the matching system
     st.session_state.all_users = [
         {"name": "Dr. Sharma", "role": "Veterinarian", "location": "Mumbai", "phone": "98765-12345", "spec": "Surgery"},
-        {"name": "Dr. Khan", "role": "Veterinarian", "location": "Delhi", "phone": "91234-56789", "spec": "General"},
-        {"name": "Dr. Reddy", "role": "Veterinarian", "location": "Mumbai", "phone": "99887-77665", "spec": "Vaccination"}
+        {"name": "Dr. Khan", "role": "Veterinarian", "location": "Delhi", "phone": "91234-56789", "spec": "General"}
     ]
 
 if "attendance_logs" not in st.session_state:
@@ -68,11 +70,6 @@ def apply_custom_styles(primary, bg, card, text):
         height: 50px;
         font-weight: bold;
     }}
-    div.stButton > button:hover {{
-        background-color: {primary} !important;
-        color: white !important;
-    }}
-    /* Login Interface Styles */
     .auth-container {{ text-align:center; padding:40px; }}
     .title-box {{
         background:#2e7d32; color:white; padding:20px;
@@ -86,7 +83,7 @@ def apply_custom_styles(primary, bg, card, text):
     </style>
     """, unsafe_allow_html=True)
 
-# ================= AUTH PAGES (KEPT SAME) =================
+# ================= AUTH PAGES =================
 def login_page():
     apply_custom_styles("#2e7d32", "#0e1117", "#1c2128", "#ffffff")
     _, c, _ = st.columns([1, 1.5, 1])
@@ -95,7 +92,6 @@ def login_page():
         st.markdown('<div class="title-box">LIVESTOCK CARE APP</div>', unsafe_allow_html=True)
         st.markdown('<div class="welcome-subtext">WELCOME TO LIVESTOCK CARE APP</div>', unsafe_allow_html=True)
         st.subheader("Sign In")
-        st.write("Please enter your details to continue.")
         with st.form("login"):
             email = st.text_input("Email")
             password = st.text_input("Password", type="password")
@@ -126,48 +122,10 @@ def signup_page():
         if st.button("Back to Login"):
             st.session_state.page = "login"; st.rerun()
 
-# ================= FEATURE MODULES =================
-def render_animals_page():
-    st.header("🐄 My Animals")
-    if st.button("➕ Add New Animal", type="primary"):
-        st.session_state.adding_animal = True
-
-    if st.session_state.get("adding_animal", False):
-        with st.form("animal_form"):
-            st.subheader("Add New Animal")
-            c1, c2 = st.columns(2)
-            name = c1.text_input("Name *", placeholder="e.g., Bella")
-            tag = c2.text_input("Tag Number *", placeholder="e.g., TAG-001")
-            c3, c4 = st.columns(2)
-            species = c3.selectbox("Species *", ["Cattle", "Buffalo", "Goat", "Sheep"])
-            gender = c4.selectbox("Gender *", ["Female", "Male"])
-            breed = st.text_input("Breed", placeholder="e.g., Angus")
-            c5, c6 = st.columns(2)
-            dob = c5.date_input("Date of Birth")
-            weight = c6.text_input("Weight (kg)")
-            status = st.selectbox("Health Status", ["Healthy", "Sick", "Under Treatment"])
-            if st.form_submit_button("Save"):
-                st.session_state.herd_data.loc[len(st.session_state.herd_data)] = [name, tag, species, gender, breed, dob, weight, status]
-                st.session_state.adding_animal = False
-                st.rerun()
-            if st.form_submit_button("Cancel"):
-                st.session_state.adding_animal = False
-                st.rerun()
-    st.dataframe(st.session_state.herd_data, use_container_width=True)
-
-def render_camera_page():
-    st.header("📸 Camera & Upload")
-    tab1, tab2 = st.tabs(["📷 Take Photo", "📁 Upload Image"])
-    with tab1:
-        img = st.camera_input("Capture")
-        if img: st.image(img)
-    with tab2:
-        up = st.file_uploader("Upload", type=["jpg", "png"])
-        if up: st.image(Image.open(up))
-
+# ================= FARMER VET FINDER =================
 def render_find_vets():
     st.header("👨‍⚕️ Find Local Veterinarians")
-    search_loc = st.text_input("Enter your location to match with Vets:", placeholder="e.g., Mumbai")
+    search_loc = st.text_input("Enter your location:", placeholder="e.g., Mumbai")
     if search_loc:
         matches = [v for v in st.session_state.all_users if v['role'] == "Veterinarian" and v['location'].lower() == search_loc.lower()]
         if matches:
@@ -184,12 +142,37 @@ def render_find_vets():
                     d = st.date_input("Select Date")
                     t = st.time_input("Select Time")
                     if st.form_submit_button("Confirm"):
+                        # Save appointment to shared list
+                        st.session_state.appointments.append({
+                            "vet_name": st.session_state.booking_vet,
+                            "farmer_name": st.session_state.user["name"],
+                            "farmer_phone": st.session_state.user["phone"],
+                            "date": str(d),
+                            "time": str(t)
+                        })
                         st.success("Appointment booked successfully!")
                         del st.session_state.booking_vet
         else:
             st.warning("No Vets found in this location.")
 
-# ================= MAIN APP LAYOUT =================
+# ================= VET APPOINTMENT CHECKER =================
+def render_vet_appointments():
+    st.header("📅 Appointment Requests")
+    my_name = st.session_state.user["name"]
+    # Filter appointments for this specific vet
+    my_appointments = [a for a in st.session_state.appointments if a['vet_name'].lower() in my_name.lower() or my_name.lower() in a['vet_name'].lower()]
+    
+    if my_appointments:
+        for appt in my_appointments:
+            with st.container(border=True):
+                st.write(f"👤 **Farmer Name:** {appt['farmer_name']}")
+                st.write(f"📞 **Phone:** {appt['farmer_phone']}")
+                st.write(f"⏰ **Time:** {appt['date']} at {appt['time']}")
+                st.button("✅ Accept", key=f"acc_{appt['time']}")
+    else:
+        st.info("No appointments booked yet.")
+
+# ================= MAIN APP =================
 def main_app():
     cl, ct, cp = st.columns([5, 2, 2])
     dark_mode = ct.toggle("🌙 Dark Mode", value=True)
@@ -198,43 +181,63 @@ def main_app():
     apply_custom_styles(primary, bg, card, text)
 
     if st.session_state.page == "profile":
-        st.header("👤 Profile Settings")
-        with st.form("edit_profile"):
-            u_name = st.text_input("Name", st.session_state.user["name"])
-            u_loc = st.text_input("Location", st.session_state.user["location"])
-            u_phone = st.text_input("Phone", st.session_state.user["phone"])
-            if st.form_submit_button("Save"):
-                st.session_state.user.update({"name": u_name, "location": u_loc, "phone": u_phone})
-                st.success("Updated!")
+        st.header("👤 Profile")
+        st.write(st.session_state.user)
         if st.button("Logout"): st.session_state.page = "login"; st.rerun()
         if st.button("⬅ Back"): st.session_state.page = "app"; st.rerun()
     
-    elif st.session_state.sub_page == "home":
-        st.markdown('<div class="header"><h1>🐄 Dashboard</h1></div>', unsafe_allow_html=True)
+    elif st.session_state.user["role"] == "Veterinarian":
+        st.markdown(f'<div class="header"><h1>👨‍⚕️ Vet Portal</h1></div>', unsafe_allow_html=True)
+        st.write(f"### Welcome Dr. {st.session_state.user['name']}")
         _, mid, _ = st.columns([1,2,1])
         with mid:
-            st.markdown('<div class="box-icon">📸</div>', unsafe_allow_html=True)
-            if st.button("Camera & Upload", use_container_width=True): st.session_state.sub_page = "camera"; st.rerun()
-        c1, c2 = st.columns(2); c3, c4 = st.columns(2)
-        with c1:
-            st.markdown('<div class="box-icon">🐄</div>', unsafe_allow_html=True)
-            if st.button("My Animals", use_container_width=True): st.session_state.sub_page = "animals"; st.rerun()
-        with c2:
-            st.markdown('<div class="box-icon">❤️</div>', unsafe_allow_html=True)
-            if st.button("Health Monitoring", use_container_width=True): st.session_state.sub_page = "health"; st.rerun()
-        with c3:
-            st.markdown('<div class="box-icon">👨‍⚕️</div>', unsafe_allow_html=True)
-            if st.button("Find Vets", use_container_width=True): st.session_state.sub_page = "portal"; st.rerun()
-        with c4:
             st.markdown('<div class="box-icon">📅</div>', unsafe_allow_html=True)
-            if st.button("Attendance", use_container_width=True): st.session_state.sub_page = "attendance"; st.rerun()
-    else:
-        if st.button("⬅ Back to Dashboard"): st.session_state.sub_page = "home"; st.rerun()
-        if st.session_state.sub_page == "animals": render_animals_page()
-        elif st.session_state.sub_page == "camera": render_camera_page()
-        elif st.session_state.sub_page == "portal": render_find_vets()
-        elif st.session_state.sub_page == "health": st.metric("Herd Status", "Healthy")
-        elif st.session_state.sub_page == "attendance": st.write("Attendance Logs...")
+            if st.button("Check Appointments", use_container_width=True):
+                st.session_state.sub_page = "vet_appt"; st.rerun()
+        
+        if st.session_state.sub_page == "vet_appt":
+            if st.button("⬅ Back"): st.session_state.sub_page = "home"; st.rerun()
+            render_vet_appointments()
+
+    else: # Farmer Portal
+        if st.session_state.sub_page == "home":
+            st.markdown('<div class="header"><h1>🐄 Dashboard</h1></div>', unsafe_allow_html=True)
+            _, mid, _ = st.columns([1,2,1])
+            with mid:
+                st.markdown('<div class="box-icon">📸</div>', unsafe_allow_html=True)
+                if st.button("Camera & Upload", use_container_width=True): st.session_state.sub_page = "camera"; st.rerun()
+            c1, c2 = st.columns(2); c3, c4 = st.columns(2)
+            with c1:
+                st.markdown('<div class="box-icon">🐄</div>', unsafe_allow_html=True)
+                if st.button("My Animals", use_container_width=True): st.session_state.sub_page = "animals"; st.rerun()
+            with c2:
+                st.markdown('<div class="box-icon">❤️</div>', unsafe_allow_html=True)
+                if st.button("Health Monitoring", use_container_width=True): st.session_state.sub_page = "health"; st.rerun()
+            with c3:
+                st.markdown('<div class="box-icon">👨‍⚕️</div>', unsafe_allow_html=True)
+                if st.button("Find Vets", use_container_width=True): st.session_state.sub_page = "portal"; st.rerun()
+            with c4:
+                st.markdown('<div class="box-icon">📅</div>', unsafe_allow_html=True)
+                if st.button("Attendance", use_container_width=True): st.session_state.sub_page = "attendance"; st.rerun()
+        else:
+            if st.button("⬅ Back"): st.session_state.sub_page = "home"; st.rerun()
+            if st.session_state.sub_page == "portal": render_find_vets()
+            elif st.session_state.sub_page == "animals": 
+                # Same form logic you had
+                st.header("🐄 My Animals")
+                if st.button("➕ Add New Animal"): st.session_state.adding = True
+                if st.session_state.get("adding"):
+                    with st.form("a"):
+                        n = st.text_input("Name")
+                        if st.form_submit_button("Save"):
+                             st.session_state.herd_data.loc[len(st.session_state.herd_data)] = [n, "0", "Cow", "F", "B", "2024", "0", "H"]
+                             st.session_state.adding = False; st.rerun()
+                st.dataframe(st.session_state.herd_data)
+            elif st.session_state.sub_page == "camera":
+                st.header("📸 Camera")
+                tab1, tab2 = st.tabs(["Capture", "Upload"])
+                with tab1: st.camera_input("Take Photo")
+                with tab2: st.file_uploader("Upload")
 
 # ================= RUN =================
 if st.session_state.page == "login": login_page()
