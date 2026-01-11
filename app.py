@@ -6,19 +6,64 @@ st.set_page_config(
     layout="wide"
 )
 
-# ================= TOP SETTINGS STRIP =================
-st.markdown("### ⚙️ App Controls")
+# ================= LANGUAGE DATA =================
+LANGUAGES = {
+    "English": {
+        "title": "Livestock Care App",
+        "subtitle": "Smart monitoring for modern farmers",
+        "welcome": "Welcome 👋",
+        "desc": "Track livestock health, monitor activity, and connect with veterinarians — all from a single smart app designed for farmers.",
+        "animals": "Animals",
+        "health": "Health Monitoring",
+        "portal": "Farmer / Vet Portal",
+        "controls": "App Controls",
+        "settings": "App Settings",
+        "dark": "Dark Mode"
+    },
+    "Hindi": {
+        "title": "पशुधन देखभाल ऐप",
+        "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
+        "welcome": "स्वागत है 👋",
+        "desc": "पशुओं के स्वास्थ्य की निगरानी करें, गतिविधि ट्रैक करें और पशु चिकित्सकों से जुड़ें।",
+        "animals": "पशु",
+        "health": "स्वास्थ्य निगरानी",
+        "portal": "किसान / पशु चिकित्सक पोर्टल",
+        "controls": "ऐप नियंत्रण",
+        "settings": "ऐप सेटिंग्स",
+        "dark": "डार्क मोड"
+    },
+    "Tamil": {
+        "title": "மிருக பராமரிப்பு செயலி",
+        "subtitle": "நவீன விவசாயிகளுக்கான புத்திசாலி கண்காணிப்பு",
+        "welcome": "வரவேற்கிறோம் 👋",
+        "desc": "மிருக ஆரோக்கியத்தை கண்காணிக்கவும், செயல்பாட்டை கண்காணிக்கவும் மற்றும் விலங்கு மருத்துவருடன் இணைக்கவும்.",
+        "animals": "மிருகங்கள்",
+        "health": "ஆரோக்கிய கண்காணிப்பு",
+        "portal": "விவசாயி / மருத்துவர் போர்டல்",
+        "controls": "அப் கட்டுப்பாடுகள்",
+        "settings": "அப் அமைப்புகள்",
+        "dark": "இருண்ட முறை"
+    }
+}
 
-col1, col2 = st.columns([8, 2])
+# ================= TOP CONTROLS =================
+st.markdown(f"### ⚙️ {LANGUAGES['English']['controls']}")
+
+col1, col2, col3 = st.columns([6, 2, 2])
+
+with col3:
+    selected_language = st.selectbox("🌐 Language", list(LANGUAGES.keys()))
+
+lang = LANGUAGES[selected_language]
 
 with col2:
-    dark_mode = st.toggle("🌙 Dark Mode", value=False)
+    dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
 
 with col1:
-    with st.expander("⚙️ App Settings"):
+    with st.expander(f"⚙️ {lang['settings']}"):
         st.write("• Notifications (coming soon)")
-        st.write("• Language (coming soon)")
-        st.write("• Profile settings (coming soon)")
+        st.write("• Language preferences")
+        st.write("• Profile settings")
 
 # ================= THEME COLORS =================
 if dark_mode:
@@ -97,36 +142,32 @@ st.markdown(f"""
     color: {subtext};
 }}
 
-/* ✅ FINAL FIX: Toggle label color */
 [data-testid="stToggle"] label div {{
     color: {text} !important;
 }}
 </style>
 """, unsafe_allow_html=True)
 
-# ================= APP HEADER =================
-st.markdown("""
+# ================= HEADER =================
+st.markdown(f"""
 <div class="app-header">
-    <h1>🐄 Livestock Care App</h1>
-    <p>Smart monitoring for modern farmers</p>
+    <h1>🐄 {lang['title']}</h1>
+    <p>{lang['subtitle']}</p>
 </div>
 """, unsafe_allow_html=True)
 
 # ================= HOME CONTENT =================
-st.markdown("""
+st.markdown(f"""
 <div class="card">
-    <h3>Welcome 👋</h3>
-    <p>
-        Track livestock health, monitor activity, and connect with veterinarians —
-        all from a single smart app designed for farmers.
-    </p>
+    <h3>{lang['welcome']}</h3>
+    <p>{lang['desc']}</p>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="app-btn">🐄 Animals</div>
-<div class="app-btn">❤️ Health Monitoring</div>
-<div class="app-btn">👨‍🌾 Farmer / Vet Portal</div>
+st.markdown(f"""
+<div class="app-btn">🐄 {lang['animals']}</div>
+<div class="app-btn">❤️ {lang['health']}</div>
+<div class="app-btn">👨‍🌾 {lang['portal']}</div>
 """, unsafe_allow_html=True)
 
 # ================= BOTTOM NAV =================
