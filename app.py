@@ -155,15 +155,48 @@ def render_animals_page():
                 st.rerun()
     st.dataframe(st.session_state.herd_data, use_container_width=True)
 
+def check_animal_health(image):
+    """
+    Simple prototype health check based on image brightness.
+    This is a placeholder for ML/AI model.
+    """
+    gray = image.convert("L")  # grayscale
+    avg_pixel = sum(gray.getdata()) / len(gray.getdata())
+
+    if avg_pixel > 120:
+        return "✅ Animal looks Healthy", "success"
+    else:
+        return "⚠️ Animal may need medical attention", "warning"
+
+
 def render_camera_page():
     st.header("📸 Camera & Upload")
     tab1, tab2 = st.tabs(["📷 Take Photo", "📁 Upload Image"])
+
     with tab1:
         img = st.camera_input("Capture")
-        if img: st.image(img)
+        if img:
+            image = Image.open(img)
+            st.image(image)
+
+            result, status = check_animal_health(image)
+            if status == "success":
+                st.success(result)
+            else:
+                st.warning(result)
+
     with tab2:
         up = st.file_uploader("Upload", type=["jpg", "png"])
-        if up: st.image(Image.open(up))
+        if up:
+            image = Image.open(up)
+            st.image(image)
+
+            result, status = check_animal_health(image)
+            if status == "success":
+                st.success(result)
+            else:
+                st.warning(result)
+
 
 def render_find_vets():
     st.header("👨‍⚕️ Find Local Veterinarians")
