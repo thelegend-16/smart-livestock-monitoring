@@ -97,8 +97,8 @@ st.markdown(f"""
     color: {subtext};
 }}
 
-/* 🔹 FIX: Toggle label color based on mode */
-.stToggle label span {{
+/* ✅ FINAL FIX: Toggle label color */
+[data-testid="stToggle"] label div {{
     color: {text} !important;
 }}
 </style>
