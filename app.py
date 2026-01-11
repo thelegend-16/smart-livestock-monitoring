@@ -8,7 +8,7 @@ st.set_page_config(
 
 # ================= SESSION STATE =================
 if "page" not in st.session_state:
-    st.session_state.page = "login"   # login | signup | app | profile
+    st.session_state.page = "login"
 
 if "user" not in st.session_state:
     st.session_state.user = {
@@ -22,9 +22,9 @@ LANGUAGES = {
     "English": {
         "title": "Livestock Care App",
         "subtitle": "Smart monitoring for modern farmers",
-        "welcome": "Welcome 👋",
+        "welcome": "Welcome back,",
         "desc": "Track livestock health, monitor activity, and connect with veterinarians — all from one smart app.",
-        "animals": "Animals",
+        "animals": "My Animals",
         "health": "Health Monitoring",
         "portal": "Farmer / Vet Portal",
         "dark": "Dark Mode",
@@ -33,9 +33,9 @@ LANGUAGES = {
     "Hindi": {
         "title": "पशुधन देखभाल ऐप",
         "subtitle": "आधुनिक किसानों के लिए स्मार्ट निगरानी",
-        "welcome": "स्वागत है 👋",
+        "welcome": "स्वागत है,",
         "desc": "पशुओं के स्वास्थ्य की निगरानी करें और पशु चिकित्सकों से जुड़ें।",
-        "animals": "पशु",
+        "animals": "मेरे पशु",
         "health": "स्वास्थ्य निगरानी",
         "portal": "किसान / पशु चिकित्सक पोर्टल",
         "dark": "डार्क मोड",
@@ -47,68 +47,43 @@ LANGUAGES = {
 def auth_styles():
     st.markdown("""
     <style>
-    /* Global Background */
-    .stApp {
-        background: #f8fafc;
-    }
-
-    /* Modern Card Styling */
     .login-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-    }
-    
-    .login-box {
-        background: white;
         padding: 40px;
+        background: white;
         border-radius: 24px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        width: 100%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-
-    .welcome-text {
+    .welcome-header {
         color: #2e7d32;
         font-weight: 700;
-        margin-bottom: 5px;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 13px;
+        letter-spacing: 1.2px;
+        font-size: 14px;
+        margin-bottom: 10px;
     }
-
     .main-title {
-        font-size: 32px;
+        font-size: 30px;
         font-weight: 800;
         color: #1e293b;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }
-
     .sub-title {
         color: #64748b;
-        margin-bottom: 25px;
-        font-size: 15px;
+        margin-bottom: 30px;
+        font-size: 16px;
     }
-
-    /* Styling the Form Submit Button */
     div[data-testid="stFormSubmitButton"] > button {
         width: 100%;
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         height: 3.5em !important;
         background: linear-gradient(90deg, #2e7d32, #4caf50) !important;
         color: white !important;
-        font-weight: 600 !important;
         border: none !important;
-        box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
-    }
-    
-    /* "Create account" link button styling */
-    div.stButton > button {
-        background-color: transparent;
-        color: #2e7d32;
-        border: 1px solid #2e7d32;
-        width: 100%;
-        border-radius: 10px;
+        font-weight: 600 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -116,24 +91,16 @@ def auth_styles():
 # ================= LOGIN PAGE =================
 def login_page():
     auth_styles()
-
-    # Center the login box
-    _, col2, _ = st.columns([1, 1.5, 1])
-
+    _, col2, _ = st.columns([1, 1.2, 1])
     with col2:
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
+        st.markdown('<div class="welcome-header">Welcome to Livestock Care App</div>', unsafe_allow_html=True)
+        st.markdown('<div class="main-title">Sign In</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sub-title">Please enter your details to continue.</div>', unsafe_allow_html=True)
         
-        # Header text outside the form for better styling
-        st.markdown("""
-            <div class="welcome-text">Welcome to Livestock Care App</div>
-            <div class="main-title">Sign In</div>
-            <div class="sub-title">Enter your credentials to access your dashboard.</div>
-        """, unsafe_allow_html=True)
-
         with st.form("login_form"):
-            email = st.text_input("Email Address", placeholder="farmer@example.com")
+            email = st.text_input("Email Address", placeholder="e.g., farmer@domain.com")
             password = st.text_input("Password", type="password", placeholder="••••••••")
-            st.checkbox("Remember me", value=True)
             submit = st.form_submit_button("Access Dashboard")
 
         if submit:
@@ -143,146 +110,152 @@ def login_page():
                 st.session_state.page = "app"
                 st.rerun()
             else:
-                st.error("Please enter email and password")
+                st.error("Missing credentials")
 
-        st.markdown("<div style='margin-top: 20px; text-align: center; width: 100%;'>", unsafe_allow_html=True)
-        if st.button("New here? Create an account"):
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("New User? Create Account"):
             st.session_state.page = "signup"
             st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-        
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= SIGN UP PAGE =================
 def signup_page():
     auth_styles()
-
-    _, col2, _ = st.columns([1, 1.5, 1])
-
+    _, col2, _ = st.columns([1, 1.2, 1])
     with col2:
         st.markdown('<div class="login-container">', unsafe_allow_html=True)
-        st.markdown("""
-            <div class="welcome-text">Join us today</div>
-            <div class="main-title">Create Account</div>
-            <div class="sub-title">Start managing your livestock smarter.</div>
-        """, unsafe_allow_html=True)
-
+        st.markdown('<div class="main-title">Join Us</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sub-title">Start your smart farming journey today.</div>', unsafe_allow_html=True)
+        
         with st.form("signup_form"):
             name = st.text_input("Full Name", placeholder="John Doe")
             email = st.text_input("Email", placeholder="john@example.com")
-            role = st.selectbox("Role", ["Farmer", "Veterinarian"])
-            password = st.text_input("Password", type="password", placeholder="••••••••")
-            submit = st.form_submit_button("Sign Up")
+            role = st.selectbox("I am a...", ["Farmer", "Veterinarian"])
+            password = st.text_input("Password", type="password")
+            submit = st.form_submit_button("Create Account")
 
         if submit:
             if name and email and password:
-                st.session_state.user = {
-                    "name": name,
-                    "email": email,
-                    "role": role
-                }
+                st.session_state.user = {"name": name, "email": email, "role": role}
                 st.session_state.page = "app"
                 st.rerun()
             else:
-                st.error("Please fill all details")
+                st.error("Please fill all fields")
 
-        if st.button("Already have an account? Login"):
+        if st.button("Already a member? Login"):
             st.session_state.page = "login"
             st.rerun()
-        
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ================= MAIN APP =================
 def main_app():
-    col1, col2, col3 = st.columns([6, 2, 2])
-
-    with col3:
-        language = st.selectbox("🌐 Language", list(LANGUAGES.keys()))
-
+    # Theme configuration
+    lang_col, theme_col, prof_col = st.columns([6, 2, 2])
+    with lang_col:
+        language = st.selectbox("🌐", list(LANGUAGES.keys()), label_visibility="collapsed")
     lang = LANGUAGES[language]
-
-    with col2:
+    with theme_col:
         dark_mode = st.toggle(f"🌙 {lang['dark']}", value=False)
-
-    with col1:
-        if st.button("👤 Profile"):
+    with prof_col:
+        if st.button(f"👤 {lang['profile']}"):
             st.session_state.page = "profile"
             st.rerun()
 
+    # Dynamic Theme Injection
     if dark_mode:
-        bg = "#0e1117"; card = "#161b22"; text = "#ffffff"; primary = "#2ea043"
+        bg, card, text, primary = "#0e1117", "#1c2128", "#FFFFFF", "#4caf50"
+        shadow = "rgba(0,0,0,0.5)"
     else:
-        bg = "#f4f6f8"; card = "#ffffff"; text = "#000000"; primary = "#2e7d32"
+        bg, card, text, primary = "#F8FAFC", "#FFFFFF", "#1E293B", "#2e7d32"
+        shadow = "rgba(0,0,0,0.05)"
 
     st.markdown(f"""
     <style>
-    .stApp {{ background-color: {bg}; color: {text}; }}
-    .header {{
-        background: linear-gradient(90deg, {primary}, #4caf50);
-        padding: 26px; border-radius: 18px;
-        color: white; text-align: center; margin-bottom: 28px;
+    .stApp {{ background-color: {bg} !important; color: {text} !important; }}
+    
+    /* Header styling */
+    .app-header {{
+        background: linear-gradient(135deg, {primary}, #81c784);
+        padding: 40px; border-radius: 24px;
+        color: white !important; text-align: center;
+        margin-bottom: 30px; box-shadow: 0 10px 20px {shadow};
     }}
-    .card {{
-        background: {card}; padding: 22px; border-radius: 16px;
-        box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
-        margin-bottom: 18px;
+    .app-header h1, .app-header p {{ color: white !important; margin: 0; }}
+
+    /* Content Card */
+    .content-card {{
+        background: {card}; padding: 25px; border-radius: 20px;
+        box-shadow: 0 4px 15px {shadow}; margin-bottom: 25px;
+        border: 1px solid {primary}33;
     }}
-    .btn-custom {{
-        background: linear-gradient(90deg, {primary}, #4caf50);
-        color: white; padding: 16px;
-        border-radius: 14px; text-align: center;
-        font-size: 17px; font-weight: 600;
-        margin-bottom: 14px;
-        cursor: pointer;
+    .content-card h3, .content-card p {{ color: {text} !important; }}
+
+    /* Interactive Buttons */
+    .nav-btn {{
+        background: {card}; border: 2px solid {primary};
+        color: {text} !important; padding: 20px;
+        border-radius: 15px; text-align: center;
+        font-weight: 700; font-size: 18px;
+        margin-bottom: 15px; transition: 0.3s ease;
+        cursor: pointer; box-shadow: 0 4px 6px {shadow};
+    }}
+    .nav-btn:hover {{
+        background: {primary}; color: white !important;
+        transform: translateY(-3px);
     }}
     </style>
     """, unsafe_allow_html=True)
 
+    # UI Elements
     st.markdown(f"""
-    <div class="header">
+    <div class="app-header">
       <h1>🐄 {lang['title']}</h1>
       <p>{lang['subtitle']}</p>
     </div>
     """, unsafe_allow_html=True)
 
     st.markdown(f"""
-    <div class="card">
-      <h3 style="color: {primary if not dark_mode else '#4caf50'};">{lang['welcome']} {st.session_state.user['name']}</h3>
+    <div class="content-card">
+      <h3>{lang['welcome']} {st.session_state.user['name']} 👋</h3>
       <p>{lang['desc']}</p>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div class="btn-custom">🐄 {lang['animals']}</div>
-    <div class="btn-custom">❤️ {lang['health']}</div>
-    <div class="btn-custom">👨‍🌾 {lang['portal']}</div>
-    """, unsafe_allow_html=True)
+    # Actionable Grid
+    col_a, col_b, col_c = st.columns(3)
+    with col_a:
+        st.markdown(f'<div class="nav-btn">🐄<br>{lang["animals"]}</div>', unsafe_allow_html=True)
+    with col_b:
+        st.markdown(f'<div class="nav-btn">❤️<br>{lang["health"]}</div>', unsafe_allow_html=True)
+    with col_c:
+        st.markdown(f'<div class="nav-btn">👨‍🌾<br>{lang["portal"]}</div>', unsafe_allow_html=True)
+
+    # Added a simple metric bar to make it feel more "real"
+    st.write("---")
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Active Herd", "24", "+2")
+    m2.metric("Pending Checkups", "3", "-1")
+    m3.metric("Feed Stock", "85%", "Stable")
 
 # ================= PROFILE PAGE =================
 def profile_page():
-    st.subheader("👤 User Profile")
+    st.markdown("### 👤 Account Settings")
+    with st.container(border=True):
+        with st.form("edit_profile"):
+            name = st.text_input("Name", st.session_state.user["name"])
+            email = st.text_input("Email", st.session_state.user["email"])
+            role = st.selectbox("Role", ["Farmer", "Veterinarian"], index=0)
+            if st.form_submit_button("Save Updates"):
+                st.session_state.user.update({"name": name, "email": email, "role": role})
+                st.success("Profile synced successfully!")
 
-    with st.form("edit_profile"):
-        name = st.text_input("Name", st.session_state.user["name"])
-        email = st.text_input("Email", st.session_state.user["email"])
-        role = st.selectbox("Role", ["Farmer", "Veterinarian"], index=0)
-        save = st.form_submit_button("Save Changes")
-
-    if save:
-        st.session_state.user.update({
-            "name": name,
-            "email": email,
-            "role": role
-        })
-        st.success("Profile updated")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("⬅ Back"):
+    c1, c2 = st.columns([1,1])
+    with c1:
+        if st.button("⬅ Dashboard", use_container_width=True):
             st.session_state.page = "app"
             st.rerun()
-    with col2:
-        if st.button("🚪 Logout"):
+    with c2:
+        if st.button("🚪 Sign Out", type="primary", use_container_width=True):
             st.session_state.page = "login"
             st.session_state.user = {"name": "", "email": "", "role": "Farmer"}
             st.rerun()
